@@ -1,18 +1,4 @@
 # Ideas for this project:
-## Features:
-### UI:
-- Available for conversion to swift iOS app
-### Backend:
-- Flask API
-- Python
-
-## General:
-- Loans
-- Reserves
-- Returns
-- Check stock
-
-
 # Development Order:
 1. Backend:
     - Database:
@@ -38,3 +24,15 @@
     - Convert webapp to iOS app
     - iSAMS integration
     - Google SSO
+## Features:
+### UI:
+- Available for conversion to swift iOS app
+### Backend:
+- Flask API
+- Python
+
+## General:
+- Loans
+- Reserves
+- Returns
+- Check stock
