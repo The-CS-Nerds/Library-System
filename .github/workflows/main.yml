@@ -1,6 +1,10 @@
 name: documentation
 
-on: [push, pull_request, workflow_dispatch]
+on:
+  push:
+    branches:
+      - 'testing'
+      - 'main'
 
 permissions:
   contents: write
