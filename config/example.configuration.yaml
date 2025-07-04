@@ -1,0 +1,7 @@
+configuration:
+  # there is no configuration right now
+database:
+  hostname: DB_HOST  
+  port: DB_PORT
+  username: DB_USER  
+  password: DB_PASSWORD
