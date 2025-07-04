@@ -1,1 +1,6 @@
 library/**
+logs/**
+config/*.yaml
+!config/example*
+
+*/__pycache__/**

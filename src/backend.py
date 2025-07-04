@@ -1,1 +1,6 @@
-from yaml import safe_load as load_yaml
+# Import modules
+import yaml
+import logging
+
+# Create a new logging object
+log = logging.getLogger(__name__)
