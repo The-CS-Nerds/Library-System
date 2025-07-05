@@ -1,0 +1,63 @@
+# Docker Compose configuration
+services:
+  frontend: # Frontend webapp
+    container_name: frontend
+    #image: library-system/frontend
+    build: 
+      context: ./src/frontend # Container is built dynamically from source
+      dockerfile: frontend.Dockerfile
+    ports: # Ports where webapp will run
+      - "443:443" # HTTPS traffic for serving webapp
+    networks:
+      - backend
+    restart: unless-stopped
+    depends_on:
+      backend:
+        condition: service_started
+    command: ["python","/src/__main__.py"]
+    env_file: "src/frontend/configuration.env"
+  backend: # Backend
+    container_name: backend
+    #image: library-system/backend
+    build: 
+      context: ./src/backend # Container is built dynamically from source
+      dockerfile: backend.Dockerfile
+    networks:
+      - backend
+      - db
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+    command: ["python","/src/__main__.py"]
+    env_file: "src/backend/configuration.env"
+  db: # Database
+    image: postgres:17.5-alpine3.21  # Using alpine Postgres image
+    networks:
+      - db
+    restart: unless-stopped
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER:     library
+      POSTGRES_PASSWORD_FILE: /run/secrets/db_pass   
+      POSTGRES_DB:       library
+
+    secrets:
+      - db_pass
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "library"]
+      interval: 10s
+      retries: 5
+      
+networks:
+  backend:
+    driver: bridge
+  db:
+    driver: bridge
+
+volumes:
+  pgdata:
