@@ -10,4 +10,15 @@ but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
-along with this program.  If not, see <https://www.gnu.org/licenses/>. /*
+along with this program.  If not, see <https://www.gnu.org/licenses/>. */
+
+
+-- Create casbin role
+CREATE ROLE casbin NOLOGIN;
+CREATE ROLE casbin_login LOGIN PASSWORD 'SUBSTITUTE_PASSWORD';
+GRANT casbin TO casbin_login;
+
+-- Create server admin, write and read roles
+CREATE ROLE server_admin LOGIN PASSWORD 'SUBSTITUTE_PASSWORD';
+CREATE ROLE server_write LOGIN PASSWORD 'SUBSTITUTE_PASSWORD';
+CREATE ROLE server_read LOGIN PASSWORD 'SUBSTITUTE_PASSWORD';
