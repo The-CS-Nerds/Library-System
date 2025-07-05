@@ -1,2 +1,2 @@
-PyYAML == 6.0.2
-mysql_connector_python == 9.3.0
+PyYAML == 6.0.2 --hash=sha256:e10ce637b18caea04431ce14fabcf5c64a1c61ec9c56b071a4b7ca131ca52d44
+psycopg[binary] == 3.2.9 --hash=sha256:3db3ba3c470801e94836ad78bf11fd5fab22e71b0c77343a1ee95d693879937a

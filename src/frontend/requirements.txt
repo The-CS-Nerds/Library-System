@@ -1,2 +1,2 @@
-Flask == 3.1.1 
-PyYAML == 6.0.2
+Flask == 3.1.1 --hash=sha256:07aae2bb5eaf77993ef57e357491839f5fd9f4dc281593a81a9e4d79a24f295c
+PyYAML == 6.0.2 --hash=sha256:e10ce637b18caea04431ce14fabcf5c64a1c61ec9c56b071a4b7ca131ca52d44
