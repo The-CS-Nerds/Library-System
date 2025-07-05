@@ -2,10 +2,12 @@
 services:
   frontend: # Frontend webapp
     container_name: frontend
-    image: library-system/frontend
-    build: ./frontend # Container is built dynamically from source
+    #image: library-system/frontend
+    build: 
+      context: ./src/frontend # Container is built dynamically from source
+      dockerfile: frontend.Dockerfile
     ports: # Ports where webapp will run
-      - "80:80" # HTTP traffic for serving webapp
+      - "443:443" # HTTPS traffic for serving webapp
     networks:
       - backend
     restart: unless-stopped
@@ -16,8 +18,10 @@ services:
     env_file: "src/frontend/configuration.env"
   backend: # Backend
     container_name: backend
-    image: library-system/backend
-    build: ./backend # Container is built dynamically from source
+    #image: library-system/backend
+    build: 
+      context: ./src/backend # Container is built dynamically from source
+      dockerfile: backend.Dockerfile
     networks:
       - backend
       - db
@@ -28,7 +32,7 @@ services:
     command: ["python","/src/__main__.py"]
     env_file: "src/backend/configuration.env"
   db: # Database
-    image: postgres/17.5-alpine3.21  # Using alpine Postgres image
+    image: postgres:17.5-alpine3.21  # Using alpine Postgres image
     networks:
       - db
     restart: unless-stopped
