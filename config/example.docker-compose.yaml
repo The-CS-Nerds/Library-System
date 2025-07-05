@@ -1,4 +1,4 @@
-x-logging:
+x-logging: # x prefix xmeans docker ignores it for first instance
   logToFIle: 0 # Specifies whether to log to a file. 0 = no, 1 = yes
   level: 30 # Specifies log file verbosity - can be set to various levels. 10 = DEBUG, 20 = INFO, 30 = WARNING, 40 = ERROR, 50 = CRITICAL
   refresh: d # Specifies when new log files are created - can be set to various levels. s = seconds, m = minutes, h = hours, d = days, midnight = at midnight
