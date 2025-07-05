@@ -33,6 +33,9 @@ services:
     env_file: "src/backend/configuration.env"
     secrets:
       - db_pass
+    depends_on:
+      db:
+        condition: service_healthy
   db: # Database
     image: postgres:17.5-alpine3.21  # Using alpine Postgres image
     networks:
@@ -52,9 +55,6 @@ services:
       test: ["CMD", "pg_isready", "-U", "library"]
       interval: 10s
       retries: 5
-    depends_on:
-      backend:
-        condition: service_started
       
 networks:
   backend:
