@@ -1,12 +1,18 @@
-configuration:
+x-logging:
+  logToFIle: 0 # Specifies whether to log to a file. 0 = no, 1 = yes
+  level: 30 # Specifies log file verbosity - can be set to various levels. 10 = DEBUG, 20 = INFO, 30 = WARNING, 40 = ERROR, 50 = CRITICAL
+  refresh: d # Specifies when new log files are created - can be set to various levels. s = seconds, m = minutes, h = hours, d = days, midnight = at midnight
+  store: 15 # Specifies how many log files are kept before deletion. If set to 0, all log files are kept.
+
+x-configuration:
   # there is no configuration right now
-database:
+
+db:
   hostname: DB_HOST  
   port: DB_PORT
   username: DB_USER  
   password: DB_PASSWORD
 
-logging:
-  level: 30 # Specifies log file verbosity - can be set to various levels. 10 = DEBUG, 20 = INFO, 30 = WARNING, 40 = ERROR, 50 = CRITICAL
-  refresh: d # Specifies when new log files are created - can be set to various levels. s = seconds, m = minutes, h = hours, d = days, midnight = at midnight
-  store: 15 # Specifies how many log files are kept before deletion. If set to 0, all log files are kept.
+library-server:
+
+frontend-server:
