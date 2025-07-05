@@ -1,5 +1,5 @@
 # Library System
-A Flask-based webapp for library management, with reserves, loans, renewal, and stocktake functionality.
+A Flask-based webapp for (book) library management, with reserves, loans, renewal, and stocktake functionality.
 
 Can run on a locally hosted server.
 
