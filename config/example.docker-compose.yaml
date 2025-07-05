@@ -7,12 +7,32 @@ x-logging: # x prefix xmeans docker ignores it for first instance
 x-configuration:
   # there is no configuration right now
 
-db:
-  hostname: DB_HOST  
-  port: DB_PORT
-  username: DB_USER  
-  password: DB_PASSWORD
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
 
-library-server:
+    
+    environment:
+      POSTGRES_USER:     library
+      POSTGRES_PASSWORD_FILE: /run/secrets/db_pass   
+      POSTGRES_DB:       library
 
-frontend-server:
+    secrets:
+      - db_pass
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "library"]
+      interval: 10s
+      retries: 5
+
+  library-server:
+    build: ./src/library-server
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+
+  frontend-server:
+    build: ./src/frontend-server
