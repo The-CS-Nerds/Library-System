@@ -26,9 +26,6 @@ services:
       - backend
       - db
     restart: unless-stopped
-    depends_on:
-      db:
-        condition: service_healthy
     environment:
       DB_HOST: db
       DB_PORT: 5432
@@ -46,12 +43,15 @@ services:
       POSTGRES_PASSWORD_FILE: /run/secrets/db_pass   
       POSTGRES_DB:       library
 
-    secrets:
-      - db_pass
+    #secrets:
+    #  - db_pass
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "library"]
       interval: 10s
       retries: 5
+    depends_on:
+      backend:
+        condition: service_started
       
 networks:
   backend:
