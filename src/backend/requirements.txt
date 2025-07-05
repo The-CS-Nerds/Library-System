@@ -1,2 +1,2 @@
 PyYAML == 6.0.2
-mysql_connector_python == 9.3.0
+psycopg[binary] == 3.2.9
