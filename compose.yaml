@@ -24,7 +24,10 @@ services:
     restart: unless-stopped
     depends_on:
       db:
-        condition: service_started
+        condition: service_healthy
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
     command: ["python","/src/__main__.py"]
     env_file: "src/backend/configuration.env"
   db: # Database
@@ -34,6 +37,17 @@ services:
     restart: unless-stopped
     volumes:
       - pgdata:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER:     library
+      POSTGRES_PASSWORD_FILE: /run/secrets/db_pass   
+      POSTGRES_DB:       library
+
+    secrets:
+      - db_pass
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "library"]
+      interval: 10s
+      retries: 5
       
 networks:
   backend:
