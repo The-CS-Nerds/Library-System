@@ -85,4 +85,4 @@ volumes:
 
 secrets:
   db_pass:
-    environment: DB_PASS
+    file: ./secrets/db_pass.txt
