@@ -32,7 +32,6 @@ services:
       backend:
         condition: service_started
     command: ["python","/src/__main__.py"]
-    env_file: "src/frontend/configuration.env"
   backend: # Backend
     container_name: backend
     #image: library-system/backend
@@ -47,7 +46,6 @@ services:
       DB_HOST: db
       DB_PORT: 5432
     command: ["python","/src/__main__.py"]
-    env_file: "src/backend/configuration.env"
     secrets:
       - db_pass
     depends_on:
@@ -85,4 +83,4 @@ volumes:
 
 secrets:
   db_pass:
-    file: ./secrets/db_pass.txt
+    environment: DB_PASS
