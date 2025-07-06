@@ -1,10 +1,17 @@
 from pathlib import Path
-import os
+import logging
 import sys
-
 from casbin import Enforcer, persist
 from casbin_sqlalchemy_adapter import Adapter
 from sqlalchemy import create_engine
+
+log = logging.getLogger(__name__)
+log_handler = logging.StreamHandler(sys.stdout)
+
+log.addHandler(log_handler)
+log.setLevel(logging.INFO)
+
+log.info('Initiating policySetup.py')
 
 MODEL_PATH   = Path(__file__).parent / "model.conf"
 POLICY_PATH = Path(__file__).parent / "policy.csv"
@@ -35,3 +42,5 @@ for rule in file_enforcer.get_policy():
 for link in file_enforcer.get_named_grouping_policy():
     if not db_enforcer.has_grouping_policy(*link):
         db_enforcer.add_grouping_policy(*link)
+
+log.info('policySetup.py finished')
