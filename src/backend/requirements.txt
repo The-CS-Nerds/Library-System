@@ -7,11 +7,15 @@
 casbin==1.43.0 \
     --hash=sha256:63a3d1228870250e859ccd94133fe478821093f71dd37f05e0baa0c6fea26623 \
     --hash=sha256:d2e90ce8e72f912877851e94d37999f32c558c6ba7aba0437d483275262e86e0
-    # via casbin-sqlalchemy-adapter
-casbin-sqlalchemy-adapter[postgresql]==0.3.0 \
-    --hash=sha256:3378014c61816461bf2f023a45420ece545249e19c2bba3f3ec3c507ed276497 \
-    --hash=sha256:89e068aefcbe746b510a1dbd616045082f6bb6ed1e8534c3ece78e6debcd9ac8
-    # via -r requirements.in
+    # via
+    #   -r requirements.in
+    #   casbin-sqlalchemy-adapter
+casbin-sqlalchemy-adapter[postgresql]==1.4.0 \
+    --hash=sha256:3cc439e3911a0f0c0de66ffde7e0de0586be1e1c772302e003d84164f4bfe291 \
+    --hash=sha256:a3e4e5d05e47fc6e04995ac26d36f53243f87ac9e3c66b24874ce6353e784897
+    # via
+    #   -r requirements.in
+    #   casbin-sqlalchemy-adapter
 greenlet==3.2.3 \
     --hash=sha256:003c930e0e074db83559edc8705f3a2d066d4aa8c2f198aff1e454946efd0f26 \
     --hash=sha256:024571bbce5f2c1cfff08bf3fbaa43bbc7444f580ae13b0099e95d0e6e67ed36 \
@@ -67,7 +71,9 @@ greenlet==3.2.3 \
     --hash=sha256:ed6cfa9200484d234d8394c70f5492f144b20d4533f69262d530a1a082f6ee9a \
     --hash=sha256:efc6dc8a792243c31f2f5674b670b3a95d46fa1c6a912b8e310d6f542e7b0712 \
     --hash=sha256:f4bfbaa6096b1b7a200024784217defedf46a07c2eee1a498e94a1b5f8ec5728
-    # via sqlalchemy
+    # via
+    #   -r requirements.in
+    #   sqlalchemy
 psycopg[binary]==3.2.9 \
     --hash=sha256:01a8dadccdaac2123c916208c96e06631641c0566b22005493f09663c7a8d3b6 \
     --hash=sha256:2fbb46fcd17bc81f993f28c47f1ebea38d66ae97cc2dbc3cad73b37cefbff700
@@ -197,7 +203,9 @@ pyyaml==6.0.2 \
 simpleeval==1.0.3 \
     --hash=sha256:67bbf246040ac3b57c29cf048657b9cf31d4e7b9d6659684daa08ca8f1e45829 \
     --hash=sha256:e3bdbb8c82c26297c9a153902d0fd1858a6c3774bf53ff4f134788c3f2035c38
-    # via casbin
+    # via
+    #   -r requirements.in
+    #   casbin
 sqlalchemy==2.0.41 \
     --hash=sha256:023b3ee6169969beea3bb72312e44d8b7c27c75b347942d943cf49397b7edeb5 \
     --hash=sha256:03968a349db483936c249f4d9cd14ff2c296adfa1290b660ba6516f973139582 \
@@ -262,8 +270,12 @@ sqlalchemy==2.0.41 \
 typing-extensions==4.14.1 \
     --hash=sha256:38b39f4aeeab64884ce9f74c94263ef78f3c22467c8724005483154c26648d36 \
     --hash=sha256:d1e1e3b58374dc93031d6eda2420a48ea44a36c2b4766a4fdeb3710755731d76
-    # via sqlalchemy
+    # via
+    #   -r requirements.in
+    #   sqlalchemy
 tzdata==2025.2 \
     --hash=sha256:1a403fada01ff9221ca8044d701868fa132215d84beb92242d9acd2147f667a8 \
     --hash=sha256:b60a638fcc0daffadf82fe0f57e53d06bdec2f36c4df66280ae79bce6bd6f2b9
-    # via psycopg
+    # via
+    #   -r requirements.in
+    #   psycopg
