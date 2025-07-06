@@ -1,0 +1,6 @@
+p,librarian,books,book,add
+p,librarian,books,book,delete
+p,librarian,loans,loan,add
+p,librarian,loans,loan,delete
+p,student,books,book,read
+p,admin,*,*,*

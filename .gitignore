@@ -2,5 +2,5 @@ library/**
 logs/**
 config/*.yaml
 !config/example*
-
+secrets/
 */__pycache__/**
