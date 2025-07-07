@@ -33,6 +33,7 @@ services:
         condition: service_started
     command: ["python","/src/__main__.py"]
   backend: # Backend
+    entrypoint: ["docker-entrypoint.sh"]
     container_name: backend
     #image: library-system/backend
     build: 
@@ -66,6 +67,7 @@ services:
 
     secrets:
       - db_pass
+      - casbin_login_pass
 
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "library"]
@@ -83,5 +85,7 @@ volumes:
   db-init:
 
 secrets:
+  casbin_login_pass:
+    file: ./secrets/casbin_login_pass.txt
   db_pass:
-    environment: DB_PASS
+    file: ./secrets/db_pass.txt
