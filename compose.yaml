@@ -17,7 +17,8 @@
 # Docker Compose configuration
 
 services:
-  frontend: # Frontend webapp
+  frontend:
+    entrypoint: ["docker-entrypoint.sh"] # Frontend webapp
     container_name: frontend
     #image: library-system/frontend
     build: 
