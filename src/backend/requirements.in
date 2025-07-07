@@ -1,0 +1,11 @@
+casbin
+casbin-sqlalchemy-adapter
+greenlet
+psycopg[binary]
+pyyaml
+simpleeval
+sqlalchemy
+typing-extensions
+tzdata
+Flask
+Flask-RESTful

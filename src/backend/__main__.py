@@ -18,30 +18,41 @@
 import yaml
 import logging
 import time
-import psycopg
 import sys
+from flask import Flask
+from flask_restful import Resource, Api
+
+import db
 
 # Create a new logging object
 log = logging.getLogger(__name__)
 log_handler = logging.StreamHandler(sys.stdout)
 
+formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
+log_handler.setFormatter(formatter)
+
 log.addHandler(log_handler)
 log.setLevel(logging.INFO)
 
-log.info('Reading DB password...')
+log.info('Creating Flask API...')
+app = Flask(__name__)
+api = Api(app)
 
-with open('/run/secrets/db_pass') as file:
-    db_pass = file.read()
+class getBookByISBN(Resource):
+    def get(self, isbn):
+        return db.getBookData(isbn = int(isbn))
 
-log.info('Read DB password.')
+class getBookByName(Resource):
+    def get(self, name):
+        return db.getBookData(name = str(name))
 
-log.info('Connecting to postgres DB...')
-with psycopg.connect(f"postgres://library:{db_pass}@db:5432/library") as conn: # create a connection to the db
-    log.info('Connected to postgres DB.')
-    log.info('Opening cursor...')
-    with conn.cursor() as cur: # open a cursor
-        log.info('Opened cursor.')
-        pass # ADD SQL COMMANDS HERE
-        conn.commit()
+class getBookByID(Resource):
+    def get(self, id):
+        return db.getBookData(id = int(id))
 
-log.info('Backend exited.')
+api.add_resource(getBookByISBN, '/Book/getByISBN')
+api.add_resource(getBookByName, '/Book/getByName')
+api.add_resource(getBookByID, '/Book/getByID')
+
+if __name__ == '__main__':
+    app.run()
