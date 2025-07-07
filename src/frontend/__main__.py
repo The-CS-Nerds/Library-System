@@ -1,5 +1,5 @@
-#    This repository is made for the purpose of managing online library systems
-#    Copyright (C) <2025>  <The CS Nerds>
+#    This program is for the hosting of a webpage, through which authentication (via Casdoor) and API requests to the backend (via Casbin) will occur.
+#    Copyright (C) 2025, The CS Nerds (HippoProgrammer & SuitablyMysterious)
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as published
@@ -13,10 +13,10 @@
 #
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
 # Import modules
 from flask import Flask
 import logging, sys
+import requests
 
 # Create a new logging object
 log = logging.getLogger(__name__)

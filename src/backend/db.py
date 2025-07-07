@@ -1,5 +1,5 @@
-#    This repository is made for the purpose of managing online library systems
-#    Copyright (C) <2025>  <The CS Nerds>
+#    This program is for communicating with a PostgreSQL database using Casbin authentication.
+#    Copyright (C) 2025, The CS Nerds (HippoProgrammer & SuitablyMysterious)
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as published
