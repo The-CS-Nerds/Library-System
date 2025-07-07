@@ -36,7 +36,7 @@ def sendSQLCommand(command, userID, table, fetch = 1): # NO USER INPUT SHOULD BE
         "SELECT": "read",
         "INSERT": "write",
         "UPDATE": "write",
-        "DELETE": "delete",
+        "DELETE": "delete", #@HippoProgrammer Please update this as I know not much SQL
     }
     action = action_map.get(verb)
     if Enforcer.enforce(userID, table, "*", action):
