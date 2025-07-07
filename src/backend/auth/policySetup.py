@@ -1,6 +1,7 @@
 from pathlib import Path
 import logging
 import sys
+import os
 from casbin import Enforcer, persist
 from casbin_sqlalchemy_adapter import Adapter
 from sqlalchemy import create_engine
@@ -16,17 +17,7 @@ log.info('Initiating policySetup.py')
 MODEL_PATH   = Path(__file__).parent / "model.conf"
 POLICY_PATH = Path(__file__).parent / "policy.csv"
 
-'''
-WE NEED TO SORT OUT:
-DB_HOST, DB_PORT, DB_USER, DB_PASSWORD, DB_NAME
-
-They need to be done securly.
-
-#26 - Security
-'''
-
-
-DSN = f"postgresql+psycopg://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+DSN = f"postgresql+psycopg://{"casbin_login"}:{os.environ["CASBIN_LOGIN_PASS"]}@{os.environ["DB_HOST"]}:{os.environ["DB_PORT"]}/{os.environ["DB_NAME"]}"
 
 engine  = create_engine(DSN, future=True)
 adapter = Adapter(engine)
