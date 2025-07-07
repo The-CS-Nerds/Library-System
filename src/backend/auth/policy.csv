@@ -4,4 +4,4 @@ p,librarian,loans,loan,add,verified
 p,librarian,loans,loan,delete,verified
 p,student,books,book,read,verified
 p,admin,*,*,*,verified
-g,
+g,000000,0000,admin,admin,root
