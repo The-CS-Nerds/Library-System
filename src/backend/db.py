@@ -16,6 +16,8 @@
 import logging
 import psycopg
 
+from casbin import Enforcer
+
 log = logging.getLogger(__name__)
 
 log.info('Reading DB password...')
@@ -28,36 +30,48 @@ log.info('Read DB password.')
 class APIException(Exception):
     pass
 
-def sendSQLCommand(command, fetch = 1): # NO USER INPUT SHOULD BE SENT DIRECTLY HERE
-    log.info('Connecting to postgres DB...')
-    with psycopg.connect(f"postgres://library:{db_pass}@db:5432/library") as conn: # create a connection to the db
-        try:
-            log.info('Connected to postgres DB.')
-            log.info('Opening cursor...')
-            with conn.cursor() as cur: # open a cursor
-                log.info('Opened cursor.')
-                cur.execute(command)
-                log.info('Sent command.')
+def sendSQLCommand(command, userID, table, fetch = 1): # NO USER INPUT SHOULD BE SENT DIRECTLY HERE
+    verb = command.strip().split()[0].upper()
+    action_map = {
+        "SELECT": "read",
+        "INSERT": "write",
+        "UPDATE": "write",
+        "DELETE": "delete",
+    }
+    action = action_map.get(verb)
+    if Enforcer.enforce(userID, table, "*", action):
+        log.debug("User is authorized to perform this action")
+        log.info('Connecting to postgres DB...')
+        with psycopg.connect(f"postgres://library:{db_pass}@db:5432/library") as conn: # create a connection to the db
+            try:
+                log.info('Connected to postgres DB.')
+                log.info('Opening cursor...')
+                with conn.cursor() as cur: # open a cursor
+                    log.info('Opened cursor.')
+                    cur.execute(command)
+                    log.info('Sent command.')
 
-                if fetch == 1:
-                    return cur.fetchone()
-                elif fetch > 1:
-                    return cur.fetchmany(fetch)
-                elif fetch == 0:
-                    return None
-                elif fetch == -1:
-                    return cur.fetchall()
-                else:
-                    raise APIException('Invalid fetch value provided to sendSQLCommand.')
-        except Exception as e:
-            conn.rollback()
-            log.error(e)
-        else:
-            conn.commit()
-            log.info('Committed.')
-        finally:
-            conn.close()
-            log.info('Connection closed.')
+                    if fetch == 1:
+                        return cur.fetchone()
+                    elif fetch > 1:
+                       return cur.fetchmany(fetch)
+                    elif fetch == 0:
+                        return None
+                    elif fetch == -1:
+                        return cur.fetchall()
+                    else:
+                        raise APIException('Invalid fetch value provided to sendSQLCommand.')
+            except Exception as e:
+                conn.rollback()
+                log.error(e)
+            else:
+                conn.commit()
+                log.info('Committed.')
+            finally:
+                conn.close()
+                log.info('Connection closed.')
+    else:
+        log.error("User is not authorized to perform this action")
 
 def getBookData(id:int = 0, isbn:int = 0, title:str = '', author:str = '', published:str = '', description:str = ''):
     args = {'id':id, 'isbn':isbn, 'title':title, 'author':author, 'published':published, 'description':description}
