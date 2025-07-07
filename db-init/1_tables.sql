@@ -21,14 +21,6 @@ CREATE TABLE IF NOT EXISTS books ( -- Needs to be updated in future
     description TEXT -- Will be done in markdown... Could be auto-generated in future if need be
 );
 
-CREATE TABLE IF NOT EXISTS users ( -- Needs to be updated in future
-    id          BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    student_id  CHAR(4) UNIQUE NOT NULL
-                CHECK (student_id ~ '^[0-9]{4}$'),
-    name        TEXT NOT NULL,
-    email       TEXT UNIQUE
-);
-
 CREATE TABLE IF NOT EXISTS loans ( -- Needs to be updated in future
     id            BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     isbn          TEXT      NOT NULL REFERENCES books(isbn)       ON UPDATE CASCADE,

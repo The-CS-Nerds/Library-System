@@ -58,7 +58,7 @@ services:
     restart: unless-stopped
     volumes:
       - pgdata:/var/lib/postgresql/data
-      - ./db-init:/docker-entrypoint-initdb.d:ro # Init scripts for postgres
+      - db-init:/docker-entrypoint-initdb.d:ro # Init scripts for postgres
     environment:
       POSTGRES_USER:     library
       POSTGRES_PASSWORD_FILE: /run/secrets/db_pass   
@@ -80,6 +80,7 @@ networks:
 
 volumes:
   pgdata:
+  db-init:
 
 secrets:
   db_pass:
