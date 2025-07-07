@@ -1,6 +1,7 @@
-p,librarian,books,book,add
-p,librarian,books,book,delete
-p,librarian,loans,loan,add
-p,librarian,loans,loan,delete
-p,student,books,book,read
-p,admin,*,*,*
+p,librarian,books,book,add,verified
+p,librarian,books,book,delete,verified
+p,librarian,loans,loan,add,verified
+p,librarian,loans,loan,delete,verified
+p,student,books,book,read,verified
+p,admin,*,*,*,verified
+g,000000,0000,admin,admin,root

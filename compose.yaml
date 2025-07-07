@@ -17,7 +17,8 @@
 # Docker Compose configuration
 
 services:
-  frontend: # Frontend webapp
+  frontend:
+    entrypoint: ["docker-entrypoint.sh"] # Frontend webapp
     container_name: frontend
     #image: library-system/frontend
     build: 
@@ -27,12 +28,14 @@ services:
       - "443:443" # HTTPS traffic for serving webapp
     networks:
       - backend
+      - casdoor
     restart: unless-stopped
     depends_on:
       backend:
         condition: service_started
     command: ["python","/src/__main__.py"]
   backend: # Backend
+    entrypoint: ["docker-entrypoint.sh"]
     container_name: backend
     #image: library-system/backend
     build: 
@@ -41,6 +44,7 @@ services:
     networks:
       - backend
       - db
+      - casdoor
     restart: unless-stopped
     environment:
       DB_HOST: db
@@ -66,16 +70,27 @@ services:
 
     secrets:
       - db_pass
+      - casbin_login_pass
 
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "library"]
       interval: 10s
       retries: 5
+  casdoor:
+    image: casbin/casdoor:v1.960.0
+    networks:
+      - casdoor
+    restart: unless-stopped
+    depends_on:
+      backend:
+        condition: service_started
       
 networks:
   backend:
     driver: bridge
   db:
+    driver: bridge
+  casdoor:
     driver: bridge
 
 volumes:
@@ -83,5 +98,7 @@ volumes:
   db-init:
 
 secrets:
+  casbin_login_pass:
+    file: ./secrets/casbin_login_pass.txt
   db_pass:
-    environment: DB_PASS
+    file: ./secrets/db_pass.txt
