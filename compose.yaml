@@ -76,10 +76,13 @@ services:
       interval: 10s
       retries: 5
   casdoor:
-    image: casdoor:v1.960.0
+    image: casbin/casdoor:v1.960.0
     networks:
       - casdoor
     restart: unless-stopped
+    depends_on:
+      backend:
+        condition: service_started
       
 networks:
   backend:
