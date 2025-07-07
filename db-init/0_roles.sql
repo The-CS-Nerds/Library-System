@@ -15,7 +15,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>. */
 
 -- Create casbin role
 CREATE ROLE casbin NOLOGIN;
-CREATE ROLE casbin_login LOGIN PASSWORD 'SUBSTITUTE_PASSWORD';
+CREATE ROLE casbin_login LOGIN PASSWORD 'casbin_login_pass';
 GRANT casbin TO casbin_login;
 
 -- Create server admin, write and read roles
