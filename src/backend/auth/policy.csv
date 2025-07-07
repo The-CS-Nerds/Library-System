@@ -1,7 +1,7 @@
-p,librarian,books,book,add,verified
-p,librarian,books,book,delete,verified
-p,librarian,loans,loan,add,verified
-p,librarian,loans,loan,delete,verified
-p,student,books,book,read,verified
-p,admin,*,*,*,verified
+p,librarian,books,book,add,True
+p,librarian,books,book,delete,True
+p,librarian,loans,loan,add,True
+p,librarian,loans,loan,delete,True
+p,student,books,book,read,True
+p,admin,*,*,*,True
 g,000000,0000,admin,admin,root

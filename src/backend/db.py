@@ -30,7 +30,7 @@ log.info('Read DB password.')
 class APIException(Exception):
     pass
 
-def sendSQLCommand(command, userID, table, fetch = 1): # NO USER INPUT SHOULD BE SENT DIRECTLY HERE
+def sendSQLCommand(command, userID, table, authorised, fetch = 1): # NO USER INPUT SHOULD BE SENT DIRECTLY HERE
     verb = command.strip().split()[0].upper()
     action_map = {
         "SELECT": "read",
@@ -39,7 +39,7 @@ def sendSQLCommand(command, userID, table, fetch = 1): # NO USER INPUT SHOULD BE
         "DELETE": "delete", #@HippoProgrammer Please update this as I know not much SQL
     }
     action = action_map.get(verb)
-    if Enforcer.enforce(userID, table, "*", action):
+    if Enforcer.enforce(userID, table, "*", action, True):
         log.debug("User is authorized to perform this action")
         log.info('Connecting to postgres DB...')
         with psycopg.connect(f"postgres://library:{db_pass}@db:5432/library") as conn: # create a connection to the db
