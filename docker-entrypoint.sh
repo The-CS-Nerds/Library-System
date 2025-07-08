@@ -28,3 +28,5 @@ export DB_PORT="${DB_PORT:-5432}"
 export DB_NAME="${DB_NAME:-library}"
 
 exec /usr/local/bin/docker-entrypoint.sh "$@"
+
+delete /run/secrets/db_pass
