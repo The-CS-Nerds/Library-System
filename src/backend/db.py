@@ -15,6 +15,7 @@
 #    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 import logging
 import psycopg
+import os
 
 from casbin import Enforcer
 
@@ -22,10 +23,10 @@ log = logging.getLogger(__name__)
 
 log.info('Reading DB password...')
 
-with open('/run/secrets/db_pass') as file:
+with open(os.environ['DB_PASS']) as file:
     db_pass = file.read()
 
-log.info('Read DB password.')
+log.info('Read DB password')
 
 class APIException(Exception):
     pass
@@ -43,6 +44,7 @@ def sendSQLCommand(command, userID, table, verified = True, fetch = 1): # NO USE
         log.debug("User is authorized to perform this action")
         log.info('Connecting to postgres DB...')
         with psycopg.connect(f"postgres://library:{db_pass}@db:5432/library") as conn: # create a connection to the db
+            db_pass.delete()
             try:
                 log.info('Connected to postgres DB.')
                 log.info('Opening cursor...')
