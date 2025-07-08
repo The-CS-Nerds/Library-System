@@ -29,4 +29,4 @@ export DB_NAME="${DB_NAME:-library}"
 
 exec /usr/local/bin/docker-entrypoint.sh "$@"
 
-delete /run/secrets/db_pass
+rm /run/secrets/db_pass
