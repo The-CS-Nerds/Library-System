@@ -23,8 +23,7 @@ log = logging.getLogger(__name__)
 
 log.info('Reading DB password...')
 
-with open(os.environ['DB_PASS']) as file:
-    db_pass = file.read()
+db_pass = os.environ['DB_PASS']
 
 log.info('Read DB password')
 
