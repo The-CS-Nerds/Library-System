@@ -1,1 +1,6 @@
-library/**
+library_env/**
+logs/**
+config/*.yaml
+!config/example*
+secrets/
+*/__pycache__/**

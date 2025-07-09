@@ -1,0 +1,104 @@
+#    This program is for the architecting of various Docker services, connected via networks, to form a stack.
+#    Copyright (C) 2025, The CS Nerds (HippoProgrammer & SuitablyMysterious)
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Affero General Public License as published
+#    by the Free Software Foundation, either version 3 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU Affero General Public License for more details.
+#
+#    You should have received a copy of the GNU Affero General Public License
+#    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+# Docker Compose configuration
+
+services:
+  frontend:
+    entrypoint: ["docker-entrypoint.sh"] # Frontend webapp
+    container_name: frontend
+    #image: library-system/frontend
+    build: 
+      context: ./src/frontend # Container is built dynamically from source
+      dockerfile: frontend.Dockerfile
+    ports: # Ports where webapp will run
+      - "443:443" # HTTPS traffic for serving webapp
+    networks:
+      - backend
+      - casdoor
+    restart: unless-stopped
+    depends_on:
+      backend:
+        condition: service_started
+    command: ["python","/src/__main__.py"]
+  backend: # Backend
+    entrypoint: ["docker-entrypoint.sh"]
+    container_name: backend
+    #image: library-system/backend
+    build: 
+      context: ./src/backend # Container is built dynamically from source
+      dockerfile: backend.Dockerfile
+    networks:
+      - backend
+      - db
+      - casdoor
+    restart: unless-stopped
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+    command: ["python","/src/__main__.py"]
+    secrets:
+      - db_pass
+    depends_on:
+      db:
+        condition: service_healthy
+  db: # Database
+    image: postgres:17.5-alpine3.21  # Using alpine Postgres image
+    networks:
+      - db
+    restart: unless-stopped
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - db-init:/docker-entrypoint-initdb.d:ro # Init scripts for postgres
+    environment:
+      POSTGRES_USER:     library
+      POSTGRES_PASSWORD_FILE: /run/secrets/db_pass   
+      POSTGRES_DB:       library
+
+    secrets:
+      - db_pass
+      - casbin_login_pass
+
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "library"]
+      interval: 10s
+      retries: 5
+  casdoor:
+    image: casbin/casdoor:v1.960.0
+    networks:
+      - casdoor
+    restart: unless-stopped
+    depends_on:
+      backend:
+        condition: service_started
+      
+networks:
+  backend:
+    driver: bridge
+  db:
+    driver: bridge
+  casdoor:
+    driver: bridge
+
+volumes:
+  pgdata:
+  db-init:
+
+secrets:
+  casbin_login_pass:
+    file: ./secrets/casbin_login_pass.txt
+  db_pass:
+    file: ./secrets/db_pass.txt
