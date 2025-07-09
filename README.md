@@ -1,7 +1,12 @@
 # Library System (v0.0.1dev)
-A Flask-based webapp, hosted in a Docker container, for library management, with reserves, loans, renewal, and stocktake functionality.
+A Flask-based webapp, hosted in a Docker container, for (book) library management, with reserves, loans, renewal, and stocktake functionality.
+
 
 Can be locally hosted using Docker Compose.
+
+## Wiki
+[Home](https://github.com/The-CS-Nerds/Library-System/wiki)
+[Installation](https://github.com/The-CS-Nerds/Library-System/wiki/Installation)
 
 ## Versions
 Currently in development.
