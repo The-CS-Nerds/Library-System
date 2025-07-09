@@ -1,0 +1,6 @@
+*.py linguist-language=Python
+*.sh linguist-language=Shell
+*.sql linguist-language=SQL
+*.Dockerfile linguist-language=Dockerfile
+*.yaml linguist-language=YAML
+*.md linguist-language=Markdown
