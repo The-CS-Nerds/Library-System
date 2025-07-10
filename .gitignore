@@ -1,4 +1,4 @@
-library/**
+library_env/**
 logs/**
 config/*.yaml
 !config/example*

@@ -1,4 +1,6 @@
-#    This program is for the configuration of Casbin definitions for access control.
+This file is not a license, but a template for one. This should be applied to all pieces of code in this repository.
+
+#    This program <one line to give the program's name and a brief idea of what it does.>
 #    Copyright (C) 2025, The CS Nerds (HippoProgrammer & SuitablyMysterious)
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -13,22 +15,3 @@
 #
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <https://www.gnu.org/licenses/>.
-# This file configures what casbin expects - known as a model
-
-[request_definition]
-r = sub, tbl, obj, act, verified # needs to be changed later on
-
-[policy_definition]
-p = sub, tbl, obj, act, verified # needs to be changed later on
-
-[role_definition]
-g = _, _, _, _, _, _ # unique id, student id, name, email, role, password
-
-[policy_effect]
-e = some(where (p.eft == allow))
-
-[matchers]
-m = g(r.sub, p.sub)           &&
-    r.tbl == p.tbl            &&
-    r.obj == p.obj            &&
-    r.act == p.act
