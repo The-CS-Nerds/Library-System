@@ -100,7 +100,14 @@ class user:
         self.role = role
     def SQLStore(self):
         try:
-            sendSQLCommand(command = f"INSERT INTO users (id, user_id, email) VALUES ('{self.id}', {self.userID}, '{self.email}')", userID = self.userID, table = 'users', verified = True, fetch = 0)
+            sendSQLCommand(
+                command="INSERT INTO users (id, user_id, email) VALUES (%s, %s, %s)",
+                params=(self.id, self.userID, self.email),
+                userID='admin', # Needs to updated later on
+                table='users',
+                verified=True,
+                fetch=0
+            )
         except Exception as e:
             log.error(f"Failed to store user {self.userID} in database: {e}")
     def addToCasbin(self):
