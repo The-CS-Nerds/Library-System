@@ -36,7 +36,6 @@ POLICY_PATH = Path(__file__).parent / "policy.csv"
 DSN = f"postgresql+psycopg://{"casbin_login"}:{os.environ["CASBIN_LOGIN_PASS"]}@{os.environ["DB_HOST"]}:{os.environ["DB_PORT"]}/{os.environ["DB_NAME"]}"
 
 engine  = create_engine(DSN, future=True)
-DSN.delete()
 adapter = Adapter(engine)
 
 enforcer = Enforcer(str(MODEL_PATH), adapter, auto_save=False)
