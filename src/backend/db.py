@@ -16,6 +16,9 @@
 import logging
 import psycopg
 import os
+import uuid
+from email_validator import validate_email, EmailNotValidError
+from casbin import Enforcer
 
 from casbin import Enforcer
 
@@ -85,5 +88,28 @@ def getBookData(id:int = 0, isbn:int = 0, title:str = '', author:str = '', publi
     else:
         raise APIException('You must only provide one argument to getBookData.')
 
-    
-
+class user:
+    def __init__(self, userID: int, email: str, role: str = 'student'):
+        try:
+            valid = validate_email(email)
+            self.email = valid.email
+        except EmailNotValidError as e:
+            log.error(f"Invalid email address: {email}")
+        self.userID = userID
+        self.id = str(uuid.uuid4())
+        self.role = role
+    def SQLStore(self):
+        try:
+            sendSQLCommand(command = f"INSERT INTO users (id, user_id, email) VALUES ('{self.id}', {self.userID}, '{self.email}')", userID = self.userID, table = 'users', verified = True, fetch = 0)
+        except Exception as e:
+            log.error(f"Failed to store user {self.userID} in database: {e}")
+    def addToCasbin(self):
+        try:
+            enforcer = Enforcer("model.conf", "policy.csv")
+            enforcer.add_policy("user", self.id, "read", "book")
+            enforcer.add_grouping_policy(self.id, "group", self.role)
+            enforcer.save_policy()
+        except Exception as e:
+            log.error(f"Failed to add user {self.userID} to Casbin: {e}")
+        else:
+            log.info(f"User {self.userID} added to Casbin successfully.")
