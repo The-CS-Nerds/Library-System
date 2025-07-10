@@ -18,7 +18,7 @@
 
 -- Create casbin role
 CREATE ROLE casbin NOLOGIN;
-CREATE ROLE casbin_login LOGIN PASSWORD 'casbin_login_pass';
+CREATE ROLE casbin_login LOGIN PASSWORD :casbin_login_pass;
 GRANT casbin TO casbin_login;
 
 -- Create server admin, write and read roles
