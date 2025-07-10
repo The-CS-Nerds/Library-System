@@ -33,3 +33,9 @@ CREATE TABLE IF NOT EXISTS loans ( -- Needs to be updated in future
     returned_at   TIMESTAMPTZ
 );
 
+CREATE TABLE IF NOT EXISTS users (
+  id UUID TEXT,
+  user_id INTEGER NOT NULL,e
+  email TEXT NOT NULL UNIQUE,
+  role TEXT NOT NULL,
+);
