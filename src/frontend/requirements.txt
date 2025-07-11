@@ -113,13 +113,13 @@ blinker==1.9.0 \
     --hash=sha256:b4ce2265a7abece45e7cc896e98dbebe6cead56bcf805a3d23136d145f5445bf \
     --hash=sha256:ba0efaa9080b619ff2f3459d1d500c57bddea4a6b424b60a91141db6fd2f08bc
     # via flask
-casdoor==1.29.0 \
-    --hash=sha256:829b76050e1dda55bd4627321434e016c63b04063d543eac5e402989e8533d3a \
-    --hash=sha256:a357e81ef851c026dc12f761dd601c25a6d194c8df7448d7a1c9e232cb470193
+casdoor==1.32.0 \
+    --hash=sha256:31f4c7a60b2c4cd2d9212544fbd10cba92ef8e59d31daa9690cc52f79601ea28 \
+    --hash=sha256:da2cc556e538a415b60bd8dc735b0e4e307cc34ea20ea455c696873724b7f9b9
     # via -r requirements.in
-certifi==2025.6.15 \
-    --hash=sha256:2e0c7ce7cb5d8f8634ca55d2ba7e6ec2689a2fd6537d8dec1296a477a4910057 \
-    --hash=sha256:d747aa5a8b9bbbb1bb8c22bb13e22bd1f18e9796defa16bab421f7f7a317323b
+certifi==2025.7.9 \
+    --hash=sha256:c1d2ec05395148ee10cf672ffc28cd37ea0ab0d99f9cc74c43e588cbd111b079 \
+    --hash=sha256:d842783a14f8fdd646895ac26f719a061408834473cfc10203f6a575beb15d39
     # via requests
 cffi==1.17.1 \
     --hash=sha256:045d61c734659cc045141be4bae381a41d89b741f795af1dd018bfb532fd0df8 \
