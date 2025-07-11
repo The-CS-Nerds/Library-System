@@ -18,10 +18,12 @@
 
 -- Create casbin role
 CREATE ROLE casbin NOLOGIN;
-CREATE ROLE casbin_login LOGIN PASSWORD 'SUBSTITUTE_PASSWORD';
+CREATE ROLE casbin_login LOGIN PASSWORD :casbin_login_pass;
 GRANT casbin TO casbin_login;
 
 -- Create server admin, write and read roles
 CREATE ROLE server_admin LOGIN PASSWORD 'SUBSTITUTE_PASSWORD';
 CREATE ROLE server_write LOGIN PASSWORD 'SUBSTITUTE_PASSWORD';
 CREATE ROLE server_read LOGIN PASSWORD 'SUBSTITUTE_PASSWORD';
+
+CREATE ROLE zitadel LOGIN PASSWORD 'zitadel';
