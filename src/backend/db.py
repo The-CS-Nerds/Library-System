@@ -20,8 +20,6 @@ import uuid
 from email_validator import validate_email, EmailNotValidError
 from casbin import Enforcer
 
-from casbin import Enforcer
-
 log = logging.getLogger(__name__)
 
 log.info('Reading DB password...')
@@ -88,7 +86,7 @@ def getBookData(id:int = 0, isbn:int = 0, title:str = '', author:str = '', publi
     else:
         raise APIException('You must only provide one argument to getBookData.')
 
-class user:
+class User:
     def __init__(self, userID: int, email: str, role: str = 'student'):
         try:
             valid = validate_email(email)

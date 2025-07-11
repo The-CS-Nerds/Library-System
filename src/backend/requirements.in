@@ -9,5 +9,4 @@ typing-extensions
 tzdata
 Flask
 Flask-RESTful
-email_validator
-uuid
+email-validator

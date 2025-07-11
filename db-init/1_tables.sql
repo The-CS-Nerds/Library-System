@@ -35,7 +35,7 @@ CREATE TABLE IF NOT EXISTS loans ( -- Needs to be updated in future
 
 CREATE TABLE IF NOT EXISTS users (
   id UUID TEXT,
-  user_id INTEGER NOT NULL,e
+  user_id INTEGER NOT NULL
   email TEXT NOT NULL UNIQUE,
   role TEXT NOT NULL,
 );
