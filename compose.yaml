@@ -17,6 +17,7 @@
 # Docker Compose configuration
 services:
   frontend:
+
     container_name: frontend
     #image: library-system/frontend
     build: 
@@ -33,6 +34,7 @@ services:
         condition: service_started
     command: ["python","/src/__main__.py"]
   backend: # Backend
+
     container_name: backend
     #image: library-system/backend
     build: 
@@ -74,30 +76,25 @@ services:
       test: ["CMD", "pg_isready", "-U", "library"]
       interval: 10s
       retries: 5
-  zitadel:
-    restart: 'always'
-    networks:
-      - 'zitadel'
-    image: 'ghcr.io/zitadel/zitadel:latest'
-    command: 'start-from-init --masterkey "MasterkeyNeedsToHave32Characters" --tlsMode disabled'
-    environment:
-      ZITADEL_DATABASE_POSTGRES_HOST: db
-      ZITADEL_DATABASE_POSTGRES_PORT: 5432
-      ZITADEL_DATABASE_POSTGRES_DATABASE: zitadel
-      ZITADEL_DATABASE_POSTGRES_USER_USERNAME: zitadel
-      ZITADEL_DATABASE_POSTGRES_USER_PASSWORD: zitadel
-      ZITADEL_DATABASE_POSTGRES_USER_SSL_MODE: disable
-      ZITADEL_DATABASE_POSTGRES_ADMIN_USERNAME: library
-      ZITADEL_DATABASE_POSTGRES_ADMIN_PASSWORD: postgres
-      ZITADEL_DATABASE_POSTGRES_ADMIN_SSL_MODE: disable
-      ZITADEL_EXTERNALSECURE: false
+
+  logto:
     depends_on:
       db:
-        condition: 'service_healthy'
+        condition: service_healthy
+    image: svhd/logto:${TAG-latest}
+    entrypoint: ["sh", "-c", "npm run cli db seed -- --swe && npm start"]
     ports:
-      - '8080:8080'
-    secrets:
-      - db_pass
+      - 3001:3001
+      - 3002:3002
+    environment:
+      - TRUST_PROXY_HEADER=1
+      - DB_URL=postgres://library:$(DB_PASS)@db:5432/library
+      # Mandatory for GitPod to map host env to the container, thus GitPod can dynamically configure the public URL of Logto;
+      # Or, you can leverage it for local testing.
+      - ENDPOINT
+      - ADMIN_ENDPOINT
+    networks:
+      - db
       
 networks:
   backend:

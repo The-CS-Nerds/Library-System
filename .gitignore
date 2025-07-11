@@ -4,4 +4,4 @@ config/*.yaml
 !config/example*
 secrets/
 */__pycache__/**
-Python-3.13.5/** 
+Python-3.15.5/**
