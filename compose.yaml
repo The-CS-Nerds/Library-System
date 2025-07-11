@@ -15,10 +15,9 @@
 #    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 # Docker Compose configuration
-
 services:
   frontend:
-    entrypoint: ["docker-entrypoint.sh"] # Frontend webapp
+
     container_name: frontend
     #image: library-system/frontend
     build: 
@@ -28,14 +27,14 @@ services:
       - "443:443" # HTTPS traffic for serving webapp
     networks:
       - backend
-      - casdoor
+      - zitadel
     restart: unless-stopped
     depends_on:
       backend:
         condition: service_started
     command: ["python","/src/__main__.py"]
   backend: # Backend
-    entrypoint: ["docker-entrypoint.sh"]
+
     container_name: backend
     #image: library-system/backend
     build: 
@@ -44,7 +43,6 @@ services:
     networks:
       - backend
       - db
-      - casdoor
     restart: unless-stopped
     environment:
       DB_HOST: db
@@ -59,13 +57,15 @@ services:
     image: postgres:17.5-alpine3.21  # Using alpine Postgres image
     networks:
       - db
+      - zitadel
     restart: unless-stopped
     volumes:
       - pgdata:/var/lib/postgresql/data
       - db-init:/docker-entrypoint-initdb.d:ro # Init scripts for postgres
     environment:
       POSTGRES_USER:     library
-      POSTGRES_PASSWORD_FILE: /run/secrets/db_pass   
+      #POSTGRES_PASSWORD_FILE: /run/secrets/db_pass   
+      POSTGRES_PASSWORD: postgres # for testing only
       POSTGRES_DB:       library
 
     secrets:
@@ -76,21 +76,32 @@ services:
       test: ["CMD", "pg_isready", "-U", "library"]
       interval: 10s
       retries: 5
-  casdoor:
-    image: casbin/casdoor:v1.960.0
-    networks:
-      - casdoor
-    restart: unless-stopped
+
+  logto:
     depends_on:
-      backend:
-        condition: service_started
+      db:
+        condition: service_healthy
+    image: svhd/logto:${TAG-latest}
+    entrypoint: ["sh", "-c", "npm run cli db seed -- --swe && npm start"]
+    ports:
+      - 3001:3001
+      - 3002:3002
+    environment:
+      - TRUST_PROXY_HEADER=1
+      - DB_URL=postgres://library:$(DB_PASS)@db:5432/library
+      # Mandatory for GitPod to map host env to the container, thus GitPod can dynamically configure the public URL of Logto;
+      # Or, you can leverage it for local testing.
+      - ENDPOINT
+      - ADMIN_ENDPOINT
+    networks:
+      - db
       
 networks:
   backend:
     driver: bridge
   db:
     driver: bridge
-  casdoor:
+  zitadel:
     driver: bridge
 
 volumes:
