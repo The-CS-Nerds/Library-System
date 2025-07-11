@@ -27,7 +27,7 @@ services:
       - "443:443" # HTTPS traffic for serving webapp
     networks:
       - backend
-      - zitadel
+      - logto
     restart: unless-stopped
     depends_on:
       backend:
@@ -54,10 +54,11 @@ services:
       db:
         condition: service_healthy
   db: # Database
+    entrypoint: ['docker-entrypoint.sh']
     image: postgres:17.5-alpine3.21  # Using alpine Postgres image
     networks:
       - db
-      - zitadel
+      - logto
     restart: unless-stopped
     volumes:
       - pgdata:/var/lib/postgresql/data
@@ -95,13 +96,14 @@ services:
       - ADMIN_ENDPOINT
     networks:
       - db
+      - logto
       
 networks:
   backend:
     driver: bridge
   db:
     driver: bridge
-  zitadel:
+  logto:
     driver: bridge
 
 volumes:
