@@ -9,3 +9,4 @@ typing-extensions
 tzdata
 Flask
 Flask-RESTful
+email-validator
