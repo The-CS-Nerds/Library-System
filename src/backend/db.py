@@ -17,14 +17,13 @@ import logging
 import psycopg
 import os
 import uuid
+from uuid import uuid4
 from email_validator import validate_email, EmailNotValidError
 from casbin import Enforcer
 
 log = logging.getLogger(__name__)
 
 log.info('Reading DB password...')
-
-db_pass = os.environ['DB_PASS']
 
 log.info('Read DB password')
 
@@ -43,8 +42,7 @@ def sendSQLCommand(command, userID, table, verified = True, fetch = 1): # NO USE
     if Enforcer.enforce(userID, table, "*", action, verified):
         log.debug("User is authorized to perform this action")
         log.info('Connecting to postgres DB...')
-        with psycopg.connect(f"postgres://library:{db_pass}@db:5432/library") as conn: # create a connection to the db
-            db_pass.delete()
+        with psycopg.connect(f"postgres://library:{str(os.environ['DB_PASS'])}@db:5432/library") as conn: # create a connection to the db
             try:
                 log.info('Connected to postgres DB.')
                 log.info('Opening cursor...')
@@ -87,7 +85,7 @@ def getBookData(id:int = 0, isbn:int = 0, title:str = '', author:str = '', publi
         raise APIException('You must only provide one argument to getBookData.')
 
 class User:
-    def __init__(self, userID: int, email: str, role: str = 'student'):
+    def __init__(self, uuid, userID: int, email: str, role: str = 'student'):
         try:
             valid = validate_email(email)
             self.email = valid.email
@@ -95,6 +93,7 @@ class User:
             log.error(f"Invalid email address: {email}")
         self.userID = userID
         self.id = str(uuid.uuid4())
+        self.uuid = uuid.uuid4()
         self.role = role
     def SQLStore(self):
         try:
@@ -118,3 +117,46 @@ class User:
             log.error(f"Failed to add user {self.userID} to Casbin: {e}")
         else:
             log.info(f"User {self.userID} added to Casbin successfully.")
+    @classmethod
+    def fillFromSQL(cls, field: str, data):
+
+        valid_columns = {
+            'userID': 'user_id',
+            'email': 'email',
+            'uuid': 'id'
+        }
+        if field not in valid_columns:
+            raise ValueError(f"Invalid field: {field}. Valid fields are: {', '.join(valid_columns.keys())}")
+            log.error(f"Invalid field: {field}. Valid fields are: {', '.join(valid_columns.keys())}")
+        
+        field = valid_columns[field]
+
+        if field == 'userID':
+            user = User(sendSQLCommand(
+                command="SELECT * FROM users WHERE user_id = %s",
+                params=(data,),
+                userID='admin',  # Needs to be updated later on
+                table='users',
+                verified=True,
+                fetch=1
+            ))
+        elif field == 'email':
+            user = User(sendSQLCommand(
+                command="SELECT * FROM users WHERE email = %s",
+                params=(data,),
+                userID='admin',  # Needs to be updated later on
+                table='users',
+                verified=True,
+                fetch=1
+            ))
+        elif field == 'uuid':
+            user = User(sendSQLCommand(
+                command="SELECT * FROM users WHERE uuid = %s",
+                params=(data,),
+                userID='admin',  # Needs to be updated later on
+                table='users',
+                verified=True,
+                fetch=1
+            ))
+        return user
+        
