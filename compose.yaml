@@ -1,0 +1,106 @@
+#    This program is for the architecting of various Docker services, connected via networks, to form a stack.
+#    Copyright (C) 2025, The CS Nerds (HippoProgrammer & SuitablyMysterious)
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Affero General Public License as published
+#    by the Free Software Foundation, either version 3 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU Affero General Public License for more details.
+#
+#    You should have received a copy of the GNU Affero General Public License
+#    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+# Docker Compose configuration
+services:
+  frontend:
+
+    container_name: frontend
+    #image: library-system/frontend
+    build: 
+      context: ./src/frontend # Container is built dynamically from source
+      dockerfile: frontend.Dockerfile
+    ports: # Ports where webapp will run
+      - "443:443" # HTTPS traffic for serving webapp
+    networks:
+      - backend
+      - logto
+    restart: unless-stopped
+    depends_on:
+      backend:
+        condition: service_started
+    command: ["python","/src/__main__.py"]
+  backend: # Backend
+
+    container_name: backend
+    #image: library-system/backend
+    build: 
+      context: ./src/backend # Container is built dynamically from source
+      dockerfile: backend.Dockerfile
+    networks:
+      - backend
+      - db
+    restart: unless-stopped
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+    command: ["python","/src/__main__.py"]
+    depends_on:
+      db:
+        condition: service_healthy
+  db: # Database
+    entrypoint: ['docker-entrypoint.sh']
+    image: postgres:17.5-alpine3.21  # Using alpine Postgres image
+    networks:
+      - db
+      - logto
+    restart: unless-stopped
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - db-init:/docker-entrypoint-initdb.d:ro # Init scripts for postgres
+    environment:
+      POSTGRES_USER:     library
+   
+      POSTGRES_PASSWORD: postgres # for testing only
+      POSTGRES_DB:       library
+
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "library"]
+      interval: 10s
+      retries: 5
+
+  logto:
+    depends_on:
+      db:
+        condition: service_healthy
+    image: svhd/logto:${TAG-latest}
+    entrypoint: ["sh", "-c", "npm run cli db seed -- --swe && npm start"]
+    ports:
+      - 3001:3001
+      - 3002:3002
+    environment:
+      - TRUST_PROXY_HEADER=1
+      - DB_URL=postgres://library:$(DB_PASS)@db:5432/library
+      # Mandatory for GitPod to map host env to the container, thus GitPod can dynamically configure the public URL of Logto;
+      # Or, you can leverage it for local testing.
+      - ENDPOINT
+      - ADMIN_ENDPOINT
+    networks:
+      - db
+      - logto
+      
+networks:
+  backend:
+    driver: bridge
+  db:
+    driver: bridge
+  logto:
+    driver: bridge
+
+volumes:
+  pgdata:
+  db-init:
+
