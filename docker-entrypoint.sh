@@ -35,6 +35,6 @@ export CASBIN_LOGIN_PASS=$(cat secrets/casbin_login_pass.txt)
 #exec /usr/local/bin/docker-entrypoint.sh "$@"
 
 
-rm secrets/db_pass.txt
-rm secrets/casbin_login_pass.txt
-rmdir secrets
+#rm secrets/db_pass.txt
+#rm secrets/casbin_login_pass.txt
+#rmdir secrets

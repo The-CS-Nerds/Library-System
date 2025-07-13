@@ -27,7 +27,7 @@ services:
       - "443:443" # HTTPS traffic for serving webapp
     networks:
       - backend
-      - zitadel
+      - logto
     restart: unless-stopped
     depends_on:
       backend:
@@ -48,29 +48,24 @@ services:
       DB_HOST: db
       DB_PORT: 5432
     command: ["python","/src/__main__.py"]
-    secrets:
-      - db_pass
     depends_on:
       db:
         condition: service_healthy
   db: # Database
+    entrypoint: ['docker-entrypoint.sh']
     image: postgres:17.5-alpine3.21  # Using alpine Postgres image
     networks:
       - db
-      - zitadel
+      - logto
     restart: unless-stopped
     volumes:
       - pgdata:/var/lib/postgresql/data
       - db-init:/docker-entrypoint-initdb.d:ro # Init scripts for postgres
     environment:
       POSTGRES_USER:     library
-      #POSTGRES_PASSWORD_FILE: /run/secrets/db_pass   
+   
       POSTGRES_PASSWORD: postgres # for testing only
       POSTGRES_DB:       library
-
-    secrets:
-      - db_pass
-      - casbin_login_pass
 
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "library"]
@@ -95,21 +90,17 @@ services:
       - ADMIN_ENDPOINT
     networks:
       - db
+      - logto
       
 networks:
   backend:
     driver: bridge
   db:
     driver: bridge
-  zitadel:
+  logto:
     driver: bridge
 
 volumes:
   pgdata:
   db-init:
 
-secrets:
-  casbin_login_pass:
-    file: ./secrets/casbin_login_pass.txt
-  db_pass:
-    file: ./secrets/db_pass.txt
