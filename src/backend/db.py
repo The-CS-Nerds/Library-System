@@ -77,7 +77,14 @@ def getBookData(id:int = 0, isbn:int = 0, title:str = '', author:str = '', publi
     args = {'id':id, 'isbn':isbn, 'title':title, 'author':author, 'published':published, 'description':description}
     provided = [arg for arg in list(args.items()) if arg[1]] # filters out provided values
     if len(provided) == 1: # if only one
-        data = sendSQLCommand(command = f'SELECT {provided[0][0]} FROM books WHERE isbn = {provided[0][1]}', fetch = 1) # SELECT column FROM books WHERE isbn = value
+        column_name = provided[0][0]
+        value = provided[0][1]
+        # Properly format the value based on type
+        if isinstance(value, str):
+            formatted_value = f"'{value}'"
+        else:
+            formatted_value = str(value)
+        data = sendSQLCommand(command = f'SELECT * FROM books WHERE {column_name} = {formatted_value}', userID='admin', table='books', fetch = 1) # SELECT * FROM books WHERE column = value
         return data
     elif len(provided) == 0: # if none provided
         raise APIException('You must provide one argument to getBookData.')

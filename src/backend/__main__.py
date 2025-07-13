@@ -44,7 +44,7 @@ class getBookByISBN(Resource):
 
 class getBookByName(Resource):
     def get(self, name):
-        return db.getBookData(name = str(name))
+        return db.getBookData(title = str(name))
 
 class getBookByID(Resource):
     def get(self, id):
