@@ -31,3 +31,5 @@ RUN adduser --disabled-password --gecos '' appuser \
 USER appuser
 
 ADD ./* ./
+
+EXPOSE 8000
