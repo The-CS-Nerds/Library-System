@@ -85,28 +85,29 @@ def getBookData(id:int = 0, isbn:int = 0, title:str = '', author:str = '', publi
         raise APIException('You must only provide one argument to getBookData.')
 
 class User:
-    def __init__(self, uuid, userID: int, email: str, role: str = 'student'):
+    def __init__(self, uuid, forename: str, surname: str, student_id: int, email: str, role: str = 'student'):
         try:
             valid = validate_email(email)
             self.email = valid.email
         except EmailNotValidError as e:
             log.error(f"Invalid email address: {email}")
-        self.userID = userID
-        self.id = str(uuid.uuid4())
-        self.uuid = uuid.uuid4()
+        self.forename = forename
+        self.surname = surname
+        self.student_id = student_id
+        self.uuid = str(uuid.uuid4())
         self.role = role
     def SQLStore(self):
         try:
             sendSQLCommand(
-                command="INSERT INTO users (id, user_id, email) VALUES (%s, %s, %s)",
-                params=(self.id, self.userID, self.email),
+                command="INSERT INTO users (id, forename, surname, student_id, email, role) VALUES (%s, %s, %s, %s, %s, %s)",
+                params=(self.id, self.forename, self.surname, self.student_id, self.email, self.role),
                 userID='admin', # Needs to updated later on
                 table='users',
                 verified=True,
                 fetch=0
             )
         except Exception as e:
-            log.error(f"Failed to store user {self.userID} in database: {e}")
+            log.error(f"Failed to store user {self.student_id} in database: {e}")
     def addToCasbin(self):
         try:
             enforcer = Enforcer("model.conf", "policy.csv")
@@ -158,5 +159,22 @@ class User:
                 verified=True,
                 fetch=1
             ))
+        elif field == 'surname':
+            user = User(sendSQLCommand(
+                command="SELECT * FROM users WHERE surname = %s",
+                params=(data,),
+                userID='admin',  # Needs to be updated later on
+                table='users',
+                verified=True,
+                fetch=1
+            ))
+        elif field == 'forename':
+            user = User(sendSQLCommand(
+                command="SELECT * FROM users WHERE forename = %s",
+                params=(data,),
+                userID='admin',  # Needs to be updated later on
+                table='users',
+                verified=True,
+                fetch=1
+            ))
         return user
-        
