@@ -18,11 +18,6 @@ FROM python:3-alpine3.21
 
 WORKDIR /src
 
-COPY docker-entrypoint.sh ./
-RUN chmod +x docker-entrypoint.sh \
- && ./docker-entrypoint.sh
-
-
 COPY requirements.txt requirements.txt
 RUN pip install --no-cache-dir --require-hashes --force-reinstall -r requirements.txt
 
