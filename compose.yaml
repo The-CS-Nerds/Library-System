@@ -48,16 +48,15 @@ services:
       DB_HOST: db
       DB_PORT: 5432
     command: ["python","/src/__main__.py"]
-    secrets:
-      - db_pass
     depends_on:
       db:
         condition: service_healthy
   db: # Database
+    # entrypoint: ['docker-entrypoint.sh']
     image: postgres:17.5-alpine3.21  # Using alpine Postgres image
+    container_name: db
     networks:
       - db
-    container_name: db
     restart: unless-stopped
     volumes:
       - pgdata:/var/lib/postgresql/data
@@ -67,10 +66,6 @@ services:
       POSTGRES_PASSWORD_FILE: /run/secrets/db_pass   
       #POSTGRES_PASSWORD: passbear # for testing only
       POSTGRES_DB:       library
-
-    secrets:
-      - db_pass
-      - casbin_login_pass
 
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "library"]
@@ -103,7 +98,7 @@ networks: # Frontend and DB MUST NEVER be on the same network.
     driver: bridge
   db: # For all containers that must communicate with the database. MUST include db. CANNOT include frontend.
     driver: bridge
-  logto: # For all containers that must communicate with Logto. MUST include Logto.
+  logto:
     driver: bridge
 
 volumes:
