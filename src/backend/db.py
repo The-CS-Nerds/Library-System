@@ -74,15 +74,16 @@ def sendSQLCommand(command, userID, table, verified = True, fetch = 1): # NO USE
         log.error("User is not authorized to perform this action")
 
 def getBookData(id:int = 0, isbn:int = 0, title:str = '', author:str = '', published:str = '', description:str = ''):
-    args = {'id':id, 'isbn':isbn, 'title':title, 'author':author, 'published':published, 'description':description}
-    provided = [arg for arg in list(args.items()) if arg[1]] # filters out provided values
-    if len(provided) == 1: # if only one
-        data = sendSQLCommand(command = f'SELECT {provided[0][0]} FROM books WHERE isbn = {provided[0][1]}', fetch = 1) # SELECT column FROM books WHERE isbn = value
-        return data
-    elif len(provided) == 0: # if none provided
-        raise APIException('You must provide one argument to getBookData.')
-    else:
-        raise APIException('You must only provide one argument to getBookData.')
+    if Enforcer.enforce('admin', 'books', 'book', 'read', True):
+        args = {'id':id, 'isbn':isbn, 'title':title, 'author':author, 'published':published, 'description':description}
+        provided = [arg for arg in list(args.items()) if arg[1]] # filters out provided values
+        if len(provided) == 1: # if only one
+            data = sendSQLCommand(command = f'SELECT {provided[0][0]} FROM books WHERE isbn = {provided[0][1]}', fetch = 1) # SELECT column FROM books WHERE isbn = value
+            return data
+        elif len(provided) == 0: # if none provided
+            raise APIException('You must provide one argument to getBookData.')
+        else:
+            raise APIException('You must only provide one argument to getBookData.')
 
 class User:
     def __init__(self, uuid, forename: str, surname: str, student_id: int, email: str, role: str = 'student'):
