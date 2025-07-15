@@ -17,9 +17,7 @@
 # Docker Compose configuration
 services:
   frontend:
-
     container_name: frontend
-    #image: library-system/frontend
     build: 
       context: ./src/frontend # Container is built dynamically from source
       dockerfile: frontend.Dockerfile
@@ -32,11 +30,9 @@ services:
     depends_on:
       backend:
         condition: service_started
-    command: ["python","/src/__main__.py"]
+    #command: ["python","/src/__main__.py"]
   backend: # Backend
-
     container_name: backend
-    #image: library-system/backend
     build: 
       context: ./src/backend # Container is built dynamically from source
       dockerfile: backend.Dockerfile
@@ -47,12 +43,11 @@ services:
     environment:
       DB_HOST: db
       DB_PORT: 5432
-    command: ["python","/src/__main__.py"]
+    #command: ["python","/src/__main__.py"]
     depends_on:
       db:
         condition: service_healthy
   db: # Database
-    # entrypoint: ['docker-entrypoint.sh']
     image: postgres:17.5-alpine3.21  # Using alpine Postgres image
     container_name: db
     networks:
@@ -63,10 +58,8 @@ services:
       - db-init:/docker-entrypoint-initdb.d:ro # Init scripts for postgres
     environment:
       POSTGRES_USER:     library
-      POSTGRES_PASSWORD_FILE: /run/secrets/db_pass   
-      #POSTGRES_PASSWORD: passbear # for testing only
+      POSTGRES_PASSWORD: postgres # for testing only
       POSTGRES_DB:       library
-
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "library"]
       interval: 10s
