@@ -16,11 +16,25 @@
 
 from secrets import token_urlsafe
 import os
+from argparse import ArgumentParser
 
-os.makedirs("secrets", exist_ok=True)
+parser = ArgumentParser()
+parser.add_argument("--keys",action='extend',nargs='+')
+parser.add_argument("--print",action='store_true')
+if parser.parse_args().print:
+    os.makedirs("secrets", exist_ok=True)
+if 'db' in parser.parse_args().keys:
+    if parser.parse_args().print:
+        print(token_urlsafe(512))
+    else:
+        with open("secrets/db_pass.txt", "w") as f:
+            f.write(token_urlsafe(512))
+        os.remove("secrets/db_pass.txt")
 
-with open("secrets/db_pass.txt", "w") as f:
-    f.write(token_urlsafe(512))
-
-with open("secrets/casbin_login_pass.txt", "w") as f:
-    f.write(token_urlsafe(512))
+if 'auth' in parser.parse_args().keys:
+    if parser.parse_args().print:
+        print(token_urlsafe(512))
+    else:
+        with open("secrets/casbin_login_pass.txt", "w") as f:
+            f.write(token_urlsafe(512))
+        os.remove("secrets/casbin_login_pass.txt")
