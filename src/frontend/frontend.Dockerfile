@@ -14,15 +14,27 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-FROM python:3-alpine3.21
+FROM node:18-alpine AS build
 
-WORKDIR /src
+RUN apk add --no-cache yarn
 
-COPY requirements.txt requirements.txt
-RUN pip install --no-cache-dir --require-hashes --force-reinstall -r requirements.txt
+# update dependencies as needed @HippoProgrammer
 
-RUN adduser --disabled-password --gecos '' appuser \
- && chown -R appuser /src
-USER appuser
+WORKDIR /src/frontend
 
-ADD ./* ./
+COPY package*.json ./
+RUN npm ci
+
+COPY . .
+RUN npm run build
+
+FROM nginx:alpine
+
+RUN rm -rf /usr/share/nginx/html/*
+COPY --from=build /src/frontend/dist /usr/share/nginx/html
+
+EXPOSE 80
+
+# change port if needed
+
+CMD ["nginx", "-g", "daemon off;"]
