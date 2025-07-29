@@ -23,7 +23,7 @@ RUN apk add --no-cache yarn
 WORKDIR /src/frontend
 
 COPY package*.json ./
-RUN npm ci
+RUN npm install
 
 COPY . .
 RUN npm run build
