@@ -53,6 +53,7 @@ class getBookByID(Resource):
 api.add_resource(getBookByISBN, '/Book/getByISBN')
 api.add_resource(getBookByName, '/Book/getByName')
 api.add_resource(getBookByID, '/Book/getByID')
+api.add_resource(db.User, '/User')
 
 if __name__ == '__main__':
     app.run()
