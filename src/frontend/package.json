@@ -1,7 +1,7 @@
 {
   "name": "library-frontend",
   "version": "1.0.0",
-  "description": "Vue frontend for library system",
+  "description": "Vue frontend for library-system",
   "main": "main.js",
   "scripts": {
     "serve": "vue-cli-service serve",
