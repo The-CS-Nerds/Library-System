@@ -64,9 +64,8 @@ services:
       - pgdata:/var/lib/postgresql/data
       - db-init:/docker-entrypoint-initdb.d:ro # Init scripts for postgres
     environment:
-      POSTGRES_USER:     library
-      POSTGRES_PASSWORD_FILE: /run/secrets/db_pass   
-      #POSTGRES_PASSWORD: passbear # for testing only
+      POSTGRES_USER:     library  
+      POSTGRES_PASSWORD: ${DB_PASS}
       POSTGRES_DB:       library
 
     healthcheck:
