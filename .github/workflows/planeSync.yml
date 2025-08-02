@@ -14,8 +14,6 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-            const fetch = require("node-fetch");
-
             const planeToken = process.env.PLANE_API_TOKEN;
             const workspaceId = "library-system";
             const projectId = "a4e04f53-ca9d-47c4-9a2e-48b32595aaee";
