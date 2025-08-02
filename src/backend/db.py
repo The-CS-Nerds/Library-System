@@ -112,8 +112,8 @@ class User:
     def addToCasbin(self):
         try:
             enforcer = Enforcer("model.conf", "policy.csv")
-            enforcer.add_policy("user", self.id, "read", "book")
-            enforcer.add_grouping_policy(self.id, "group", self.role)
+            enforcer.add_policy("user", self.uuid, "read", "book")
+            enforcer.add_grouping_policy(self.uuid, "group", self.role)
             enforcer.save_policy()
         except Exception as e:
             log.error(f"Failed to add user {self.userID} to Casbin: {e}")
