@@ -26,7 +26,7 @@ log = logging.getLogger(__name__)
 log_handler = logging.StreamHandler(sys.stdout)
 
 log.addHandler(log_handler)
-log.setLevel(logging.INFO)
+log.setLevel(logging.DEBUG)
 
 log.info('Initiating policySetup.py')
 
