@@ -73,14 +73,21 @@ jobs:
               const taskId = existing.results[0].id;
               console.log(`Updating existing ${type} in Plane: ${taskId}`);
 
-              await fetch(`${planeApiBase}/${taskId}/`, {
+              const patchResponse = await fetch(`${planeApiBase}/${taskId}/`, {
                 method: "PATCH",
                 headers: {
                   "Content-Type": "application/json",
                   "Authorization": `Bearer ${planeToken}`,
                 },
                 body: JSON.stringify(taskData),
-              }).then(r => r.json()).then(d => console.log("Updated:", d));
+              });
+              if (!patchResponse.ok) {
+                const errorText = await patchResponse.text();
+                console.error(`Failed to update ${type} in Plane: ${patchResponse.status} ${patchResponse.statusText} - ${errorText}`);
+                throw new Error(`Plane PATCH request failed with status ${patchResponse.status}`);
+              }
+              const updatedData = await patchResponse.json();
+              console.log("Updated:", updatedData);
             } else {
               // 3. Create new task
               console.log(`Creating new ${type} in Plane`);
