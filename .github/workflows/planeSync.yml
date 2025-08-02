@@ -33,12 +33,20 @@ jobs:
 
             // Map state → Plane status
             let status = "Backlog";
-            if (item.state === "closed" && !item.merged_at) {
-              status = "Done";
-            } else if (item.merged_at) {
-              status = "Merged"; // Consider creating "Merged" status in Plane
-            } else if (action === "reopened") {
-              status = "In Progress";
+            if (type === "Issue") {
+              if (item.state === "closed") {
+                status = "Done";
+              } else if (action === "reopened") {
+                status = "In Progress";
+              }
+            } else if (type === "PR") {
+              if (item.merged_at) {
+                status = "Merged"; // Consider creating "Merged" status in Plane
+              } else if (item.state === "closed") {
+                status = "Done";
+              } else if (action === "reopened") {
+                status = "In Progress";
+              }
             }
 
             const externalId = `${type}-${item.id}`;
