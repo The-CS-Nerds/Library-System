@@ -6,7 +6,7 @@ if [ $1 = "--kill" ]; then
   docker system prune --force
   exit 0
 else
-  docker compose up --build $1
+  docker compose up --build $1 backend db
 fi
 unset DB_PASS
 unset CASBIN_LOGIN_PASS
