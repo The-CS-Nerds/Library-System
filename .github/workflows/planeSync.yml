@@ -19,8 +19,6 @@ jobs:
             const planeToken = process.env.PLANE_API_TOKEN;
             const workspaceId = "library-system";
             const projectId = "a4e04f53-ca9d-47c4-9a2e-48b32595aaee";
-
-            // Detect if it's an issue or PR
             const isIssue = !!context.payload.issue;
             const isPR = !!context.payload.pull_request;
 
