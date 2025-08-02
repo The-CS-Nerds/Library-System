@@ -47,7 +47,7 @@ services:
     environment:
       DB_HOST: db
       DB_PORT: 5432
-    command: ["python","/src/__main__.py"]
+    command: ["python", "src/auth/policySetup.py", "&&", "python", "/src/__main__.py"]
     depends_on:
       db:
         condition: service_healthy
