@@ -86,7 +86,7 @@ def getBookData(id:int = 0, isbn:int = 0, title:str = '', author:str = '', publi
             raise APIException('You must only provide one argument to getBookData.')
 
 class User:
-    def __init__(self, uuid, forename: str, surname: str, student_id: int, email: str, role: str = 'student'):
+    def __init__(self, forename: str, surname: str, student_id: int, email: str, role: str = 'student'):
         try:
             valid = validate_email(email)
             self.email = valid.email
@@ -101,7 +101,7 @@ class User:
         try:
             sendSQLCommand(
                 command="INSERT INTO users (id, forename, surname, student_id, email, role) VALUES (%s, %s, %s, %s, %s, %s)",
-                params=(self.id, self.forename, self.surname, self.student_id, self.email, self.role),
+                params=(self.uuid, self.forename, self.surname, self.student_id, self.email, self.role),
                 userID='admin', # Needs to updated later on
                 table='users',
                 verified=True,
@@ -123,7 +123,7 @@ class User:
     def fillFromSQL(cls, field: str, data):
 
         valid_columns = {
-            'userID': 'user_id',
+            'userID': 'student_id',
             'email': 'email',
             'uuid': 'id'
         }

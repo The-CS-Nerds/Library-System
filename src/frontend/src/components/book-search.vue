@@ -37,7 +37,6 @@ export default {
   data() {
     return {
       query: {
-        id: '',
         isbn: '',
         name: ''
       },
