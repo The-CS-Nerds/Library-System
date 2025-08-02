@@ -64,10 +64,11 @@ services:
     restart: unless-stopped
     volumes:
       - pgdata:/var/lib/postgresql/data
-      - db-init:/docker-entrypoint-initdb.d:ro # Init scripts for postgres
+      - ./db-init:/docker-entrypoint-initdb.d:ro
     environment:
       POSTGRES_USER:     library  
       POSTGRES_PASSWORD: ${DB_PASS}
+      CASBIN_LOGIN_PASS: ${CASBIN_LOGIN_PASS}
       POSTGRES_DB:       library
 
     healthcheck:
@@ -106,7 +107,6 @@ networks: # Frontend and DB MUST NEVER be on the same network.
 
 volumes:
   pgdata:
-  db-init:
 
 secrets:
   casbin_login_pass:
