@@ -1,4 +1,5 @@
 name: Sync GitHub Issues & PRs to Plane
+permissions: {}
 
 on:
   issues:
