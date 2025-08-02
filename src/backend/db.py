@@ -116,9 +116,9 @@ class User:
             enforcer.add_grouping_policy(self.uuid, "group", self.role)
             enforcer.save_policy()
         except Exception as e:
-            log.error(f"Failed to add user {self.userID} to Casbin: {e}")
+            log.error(f"Failed to add user {self.uuid} to Casbin: {e}")
         else:
-            log.info(f"User {self.userID} added to Casbin successfully.")
+            log.info(f"User {self.uuid} added to Casbin successfully.")
     @classmethod
     def fillFromSQL(cls, field: str, data):
 
