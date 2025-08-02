@@ -1,0 +1,21 @@
+{
+  "name": "library-frontend",
+  "version": "1.0.0",
+  "description": "Vue frontend for library-system",
+  "main": "main.js",
+  "scripts": {
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build"
+  },
+  "dependencies": {
+    "vue": "^3.3.4",
+    "vue-router": "^4.2.5"
+  },
+  "devDependencies": {
+    "@vue/cli-service": "^5.0.8"
+  },
+
+  "author": "The CS Nerds",
+  "license": "GNU Affero General Public License",
+  "private": true
+}

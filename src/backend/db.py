@@ -74,18 +74,19 @@ def sendSQLCommand(command, userID, table, verified = True, fetch = 1): # NO USE
         log.error("User is not authorized to perform this action")
 
 def getBookData(id:int = 0, isbn:int = 0, title:str = '', author:str = '', published:str = '', description:str = ''):
-    args = {'id':id, 'isbn':isbn, 'title':title, 'author':author, 'published':published, 'description':description}
-    provided = [arg for arg in list(args.items()) if arg[1]] # filters out provided values
-    if len(provided) == 1: # if only one
-        data = sendSQLCommand(command = f'SELECT {provided[0][0]} FROM books WHERE isbn = {provided[0][1]}', fetch = 1) # SELECT column FROM books WHERE isbn = value
-        return data
-    elif len(provided) == 0: # if none provided
-        raise APIException('You must provide one argument to getBookData.')
-    else:
-        raise APIException('You must only provide one argument to getBookData.')
+    if Enforcer.enforce('admin', 'books', 'book', 'read', True):
+        args = {'id':id, 'isbn':isbn, 'title':title, 'author':author, 'published':published, 'description':description}
+        provided = [arg for arg in list(args.items()) if arg[1]] # filters out provided values
+        if len(provided) == 1: # if only one
+            data = sendSQLCommand(command = f'SELECT {provided[0][0]} FROM books WHERE isbn = {provided[0][1]}', fetch = 1) # SELECT column FROM books WHERE isbn = value
+            return data
+        elif len(provided) == 0: # if none provided
+            raise APIException('You must provide one argument to getBookData.')
+        else:
+            raise APIException('You must only provide one argument to getBookData.')
 
 class User:
-    def __init__(self, uuid, forename: str, surname: str, student_id: int, email: str, role: str = 'student'):
+    def __init__(self, forename: str, surname: str, student_id: int, email: str, role: str = 'student'):
         try:
             valid = validate_email(email)
             self.email = valid.email
@@ -100,7 +101,7 @@ class User:
         try:
             sendSQLCommand(
                 command="INSERT INTO users (id, forename, surname, student_id, email, role) VALUES (%s, %s, %s, %s, %s, %s)",
-                params=(self.id, self.forename, self.surname, self.student_id, self.email, self.role),
+                params=(self.uuid, self.forename, self.surname, self.student_id, self.email, self.role),
                 userID='admin', # Needs to updated later on
                 table='users',
                 verified=True,
@@ -111,18 +112,18 @@ class User:
     def addToCasbin(self):
         try:
             enforcer = Enforcer("model.conf", "policy.csv")
-            enforcer.add_policy("user", self.id, "read", "book")
-            enforcer.add_grouping_policy(self.id, "group", self.role)
+            enforcer.add_policy("user", self.uuid, "read", "book")
+            enforcer.add_grouping_policy(self.uuid, "group", self.role)
             enforcer.save_policy()
         except Exception as e:
-            log.error(f"Failed to add user {self.userID} to Casbin: {e}")
+            log.error(f"Failed to add user {self.uuid} to Casbin: {e}")
         else:
-            log.info(f"User {self.userID} added to Casbin successfully.")
+            log.info(f"User {self.uuid} added to Casbin successfully.")
     @classmethod
     def fillFromSQL(cls, field: str, data):
 
         valid_columns = {
-            'userID': 'user_id',
+            'userID': 'student_id',
             'email': 'email',
             'uuid': 'id'
         }

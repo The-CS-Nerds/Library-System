@@ -27,7 +27,7 @@ services:
       - "443:443" # HTTPS traffic for serving webapp
     networks:
       - backend
-      - zitadel
+      - logto
     restart: unless-stopped
     depends_on:
       backend:
@@ -48,29 +48,25 @@ services:
       DB_HOST: db
       DB_PORT: 5432
     command: ["python","/src/__main__.py"]
-    secrets:
-      - db_pass
     depends_on:
       db:
         condition: service_healthy
+    ports:
+      - "8000:8000"
   db: # Database
+    # entrypoint: ['docker-entrypoint.sh']
     image: postgres:17.5-alpine3.21  # Using alpine Postgres image
+    container_name: db
     networks:
       - db
-      - zitadel
     restart: unless-stopped
     volumes:
       - pgdata:/var/lib/postgresql/data
       - db-init:/docker-entrypoint-initdb.d:ro # Init scripts for postgres
     environment:
-      POSTGRES_USER:     library
-      #POSTGRES_PASSWORD_FILE: /run/secrets/db_pass   
-      POSTGRES_PASSWORD: postgres # for testing only
+      POSTGRES_USER:     library  
+      POSTGRES_PASSWORD: ${DB_PASS}
       POSTGRES_DB:       library
-
-    secrets:
-      - db_pass
-      - casbin_login_pass
 
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "library"]
@@ -88,20 +84,22 @@ services:
       - 3002:3002
     environment:
       - TRUST_PROXY_HEADER=1
-      - DB_URL=postgres://library:$(DB_PASS)@db:5432/library
-      # Mandatory for GitPod to map host env to the container, thus GitPod can dynamically configure the public URL of Logto;
-      # Or, you can leverage it for local testing.
-      - ENDPOINT
-      - ADMIN_ENDPOINT
+      - DB_URL=postgres://library:$DB_PASS@db:5432/library
+      - NODE_ENV=test
+      - PORT=3001
+      - ADMIN_PORT=3002
+      - ADMIN_ENDPOINT=http://localhost:3002
     networks:
       - db
+      - logto
+    restart: unless-stopped
       
-networks:
-  backend:
+networks: # Frontend and DB MUST NEVER be on the same network.
+  backend: # For all containers that must communicate with backend. MUST include backend.
     driver: bridge
-  db:
+  db: # For all containers that must communicate with the database. MUST include db. CANNOT include frontend.
     driver: bridge
-  zitadel:
+  logto:
     driver: bridge
 
 volumes:
@@ -110,6 +108,6 @@ volumes:
 
 secrets:
   casbin_login_pass:
-    file: ./secrets/casbin_login_pass.txt
+    environment: CASBIN_LOGIN_PASS
   db_pass:
-    file: ./secrets/db_pass.txt
+    environment: DB_PASS
