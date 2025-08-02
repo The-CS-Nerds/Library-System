@@ -1,0 +1,93 @@
+name: Sync GitHub Issues & PRs to Plane
+
+on:
+  issues:
+    types: [opened, edited, closed, reopened]
+  pull_request:
+    types: [opened, edited, closed, reopened]
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Sync to Plane
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fetch = require("node-fetch");
+
+            const planeToken = process.env.PLANE_API_TOKEN;
+            const workspaceId = "library-system";
+            const projectId = "a4e04f53-ca9d-47c4-9a2e-48b32595aaee";
+
+            // Detect if it's an issue or PR
+            const isIssue = !!context.payload.issue;
+            const isPR = !!context.payload.pull_request;
+
+            let item, action, type;
+            if (isIssue) {
+              item = context.payload.issue;
+              action = context.payload.action;
+              type = "Issue";
+            } else if (isPR) {
+              item = context.payload.pull_request;
+              action = context.payload.action;
+              type = "PR";
+            }
+
+            // Map state → Plane status
+            let status = "Backlog";
+            if (item.state === "closed" && !item.merged_at) {
+              status = "Done";
+            } else if (item.merged_at) {
+              status = "Merged"; // Consider creating "Merged" status in Plane
+            } else if (action === "reopened") {
+              status = "In Progress";
+            }
+
+            const externalId = `${type}-${item.id}`;
+
+            // Task data for Plane
+            const taskData = {
+              title: `${type}: ${item.title}`,
+              description: item.body || "",
+              external_id: externalId,
+              status: status,
+              priority: "Medium",
+              assignees: [],
+            };
+
+            const planeApiBase = `https://app.plane.so/api/workspaces/${workspaceId}/projects/${projectId}/issues`;
+
+            // 1. Check if this task already exists
+            const existing = await fetch(`${planeApiBase}/?external_id=${encodeURIComponent(externalId)}`, {
+              headers: { "Authorization": `Bearer ${planeToken}` }
+            }).then(res => res.json());
+
+            if (existing.results && existing.results.length > 0) {
+              // 2. Update existing task
+              const taskId = existing.results[0].id;
+              console.log(`Updating existing ${type} in Plane: ${taskId}`);
+
+              await fetch(`${planeApiBase}/${taskId}/`, {
+                method: "PATCH",
+                headers: {
+                  "Content-Type": "application/json",
+                  "Authorization": `Bearer ${planeToken}`,
+                },
+                body: JSON.stringify(taskData),
+              }).then(r => r.json()).then(d => console.log("Updated:", d));
+            } else {
+              // 3. Create new task
+              console.log(`Creating new ${type} in Plane`);
+              await fetch(`${planeApiBase}/`, {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  "Authorization": `Bearer ${planeToken}`,
+                },
+                body: JSON.stringify(taskData),
+              }).then(r => r.json()).then(d => console.log("Created:", d));
+            }
+        env:
+          PLANE_API_TOKEN: ${{ secrets.PLANE_API_TOKEN }}
