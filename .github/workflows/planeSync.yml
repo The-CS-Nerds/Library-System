@@ -1,0 +1,116 @@
+name: Sync GitHub Issues & PRs to Plane
+permissions: {}
+
+on:
+  issues:
+    types: [opened, edited, closed, reopened]
+  pull_request:
+    types: [opened, edited, closed, reopened]
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Sync to Plane
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const planeToken = process.env.PLANE_API_TOKEN;
+            const workspaceId = "library-system";
+            const projectId = "a4e04f53-ca9d-47c4-9a2e-48b32595aaee";
+            const isIssue = !!context.payload.issue;
+            const isPR = !!context.payload.pull_request;
+
+            let item, action, type;
+            if (isIssue) {
+              item = context.payload.issue;
+              action = context.payload.action;
+              type = "Issue";
+            } else if (isPR) {
+              item = context.payload.pull_request;
+              action = context.payload.action;
+              type = "PR";
+            }
+
+            // Map state → Plane status
+            let status = "Backlog";
+            if (type === "Issue") {
+              if (item.state === "closed") {
+                status = "Done";
+              } else if (action === "reopened") {
+                status = "In Progress";
+              }
+            } else if (type === "PR") {
+              if (item.merged_at) {
+                status = "Merged"; // Consider creating "Merged" status in Plane
+              } else if (item.state === "closed") {
+                status = "Done";
+              } else if (action === "reopened") {
+                status = "In Progress";
+              }
+            }
+
+            const externalId = `${type}-${item.id}`;
+
+            // Task data for Plane
+            const taskData = {
+              title: `${type}: ${item.title}`,
+              description: item.body || "",
+              external_id: externalId,
+              status: status,
+              priority: "Medium",
+              assignees: [],
+            };
+
+            const planeApiBase = `https://app.plane.so/api/workspaces/${workspaceId}/projects/${projectId}/issues`;
+
+            // 1. Check if this task already exists
+            const existing = await fetch(`${planeApiBase}/?external_id=${encodeURIComponent(externalId)}`, {
+              headers: { "Authorization": `Bearer ${planeToken}` }
+            }).then(res => res.json());
+
+            if (existing.results && existing.results.length > 0) {
+              // 2. Update existing task
+              const taskId = existing.results[0].id;
+              console.log(`Updating existing ${type} in Plane: ${taskId}`);
+
+              const patchResponse = await fetch(`${planeApiBase}/${taskId}/`, {
+                method: "PATCH",
+                headers: {
+                  "Content-Type": "application/json",
+                  "Authorization": `Bearer ${planeToken}`,
+                },
+                body: JSON.stringify(taskData),
+              });
+              if (!patchResponse.ok) {
+                const errorText = await patchResponse.text();
+                console.error(`Failed to update ${type} in Plane: ${patchResponse.status} ${patchResponse.statusText} - ${errorText}`);
+                throw new Error(`Plane PATCH request failed with status ${patchResponse.status}`);
+              }
+              const updatedData = await patchResponse.json();
+              console.log("Updated:", updatedData);
+            } else {
+              // 3. Create new task
+              console.log(`Creating new ${type} in Plane`);
+              try {
+                const response = await fetch(`${planeApiBase}/`, {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${planeToken}`,
+                  },
+                  body: JSON.stringify(taskData),
+                });
+                if (!response.ok) {
+                  const errorBody = await response.text();
+                  throw new Error(`Failed to create ${type} in Plane: ${response.status} ${response.statusText} - ${errorBody}`);
+                }
+                const data = await response.json();
+                console.log("Created:", data);
+              } catch (error) {
+                console.error(`Error creating ${type} in Plane:`, error);
+                throw error;
+              }
+            }
+        env:
+          PLANE_API_TOKEN: ${{ secrets.PLANE_API_TOKEN }}
