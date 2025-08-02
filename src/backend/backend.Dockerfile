@@ -21,8 +21,10 @@ WORKDIR /src
 COPY requirements.txt requirements.txt
 RUN pip install --no-cache-dir --require-hashes --force-reinstall -r requirements.txt
 
-RUN adduser --disabled-password --gecos '' appuser \
- && chown -R appuser /src
+RUN adduser --disabled-password --gecos '' appuser
 USER appuser
 
 ADD ./* ./
+
+EXPOSE 8000
+

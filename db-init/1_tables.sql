@@ -16,7 +16,7 @@
 #    along with this program.  If not, see <https://www.gnu.org/licenses/>. */
 
 CREATE TABLE IF NOT EXISTS books ( -- Needs to be updated in future
-    id          BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    id          UUID PRIMARY KEY,
     isbn        TEXT UNIQUE NOT NULL,
     title       TEXT NOT NULL,
     author      TEXT NOT NULL,
@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS books ( -- Needs to be updated in future
 );
 
 CREATE TABLE IF NOT EXISTS loans ( -- Needs to be updated in future
-    id            BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    id            UUID PRIMARY KEY,
     isbn          TEXT      NOT NULL REFERENCES books(isbn)       ON UPDATE CASCADE,
     student_id    CHAR(4)   NOT NULL REFERENCES users(student_id) ON UPDATE CASCADE,
     borrowed_at   TIMESTAMPTZ    DEFAULT now(),
@@ -33,3 +33,11 @@ CREATE TABLE IF NOT EXISTS loans ( -- Needs to be updated in future
     returned_at   TIMESTAMPTZ
 );
 
+CREATE TABLE IF NOT EXISTS users (
+  id UUID PRIMARY KEY,
+  forename TEXT NOT NULL,
+  surname TEXT NOT NULL,
+  student_id INTEGER NOT NULL
+  email TEXT NOT NULL UNIQUE,
+  role TEXT NOT NULL,
+);
