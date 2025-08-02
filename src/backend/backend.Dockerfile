@@ -24,7 +24,7 @@ RUN pip install --no-cache-dir --require-hashes --force-reinstall -r requirement
 RUN adduser --disabled-password --gecos '' appuser
 USER appuser
 
-ADD ./* ./
+ADD . ./
 
 EXPOSE 8000
 
