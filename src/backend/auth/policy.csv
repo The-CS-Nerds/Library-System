@@ -5,4 +5,4 @@ p,librarian,loans,loan,delete,True
 p,student,books,book,read,True
 p,*,books,book,read,False
 p,admin,*,*,*,True
-g,000000,0000,admin,admin,root
+g,000000,None,admin,None,admin,root

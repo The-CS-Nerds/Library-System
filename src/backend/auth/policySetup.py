@@ -26,7 +26,7 @@ log = logging.getLogger(__name__)
 log_handler = logging.StreamHandler(sys.stdout)
 
 log.addHandler(log_handler)
-log.setLevel(logging.INFO)
+log.setLevel(logging.DEBUG)
 
 log.info('Initiating policySetup.py')
 
@@ -38,9 +38,9 @@ DSN = f"postgresql+psycopg://{"casbin_login"}:{os.environ["CASBIN_LOGIN_PASS"]}@
 engine  = create_engine(DSN, future=True)
 adapter = Adapter(engine)
 
-enforcer = Enforcer(str(MODEL_PATH), adapter, auto_save=False)
+enforcer = Enforcer(str(MODEL_PATH), adapter)
 enforcer.load_policy()
-db_enforcer = Enforcer(str(MODEL_PATH), adapter, auto_save=False)
+db_enforcer = Enforcer(str(MODEL_PATH), adapter)
 file_enforcer = Enforcer(str(MODEL_PATH), str(POLICY_PATH))
 
 for rule in file_enforcer.get_policy():
