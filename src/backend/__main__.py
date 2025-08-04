@@ -50,9 +50,9 @@ class getBookByID(Resource):
     def get(self, id):
         return db.getBookData(id = int(id))
 
-api.add_resource(getBookByISBN, '/Book/getByISBN/<isbn>')
-api.add_resource(getBookByName, '/Book/getByName/<name>')
-api.add_resource(getBookByID, '/Book/getByID/<id>')
+api.add_resource(getBookByISBN, '/Book/getByISBN/')
+api.add_resource(getBookByName, '/Book/getByName/')
+api.add_resource(getBookByID, '/Book/getByID/')
 
 if __name__ == '__main__':
     app.run()
