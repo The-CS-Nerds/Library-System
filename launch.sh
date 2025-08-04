@@ -1,6 +1,6 @@
 #!/bin/sh
-export DB_PASS=`python3 dbKeyGen.py --keys db --print`
-export CASBIN_LOGIN_PASS=`python3 dbKeyGen.py --keys auth --print`
+export DB_PASS=`python dbKeyGen.py --keys db --print`
+export CASBIN_LOGIN_PASS=`python dbKeyGen.py --keys auth --print`
 if [ $1 = "--kill" ]; then
   docker compose down -v
   docker system prune --force
