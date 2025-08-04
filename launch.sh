@@ -7,7 +7,8 @@ if [ $1 = "--kill" ]; then
   docker volume prune --force
   exit 0
 else
-  docker compose up --build $1 backend db
+  docker compose down -v
+  docker compose up --build $1 backend db frontend
 fi
 unset DB_PASS
 unset CASBIN_LOGIN_PASS

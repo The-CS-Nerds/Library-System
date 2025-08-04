@@ -48,6 +48,7 @@ services:
       DB_HOST: db
       DB_PORT: 5432
       DB_NAME: library
+      POSTGRES_PASSWORD: ${DB_PASS}
       CASBIN_LOGIN_PASS: ${CASBIN_LOGIN_PASS}
     command: sh -c "python /src/auth/policySetup.py && python /src/__main__.py"
     depends_on:
@@ -55,6 +56,9 @@ services:
         condition: service_healthy
     ports:
       - "8000:8000"
+    secrets:
+      - casbin_login_pass
+      - db_pass
   db: # Database
     # entrypoint: ['docker-entrypoint.sh']
     image: postgres:17.5-alpine3.21  # Using alpine Postgres image
