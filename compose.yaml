@@ -47,12 +47,18 @@ services:
     environment:
       DB_HOST: db
       DB_PORT: 5432
-    command: ["python","/src/__main__.py"]
+      DB_NAME: library
+      POSTGRES_PASSWORD: ${DB_PASS}
+      CASBIN_LOGIN_PASS: ${CASBIN_LOGIN_PASS}
+    command: sh -c "python /src/auth/policySetup.py && python /src/__main__.py"
     depends_on:
       db:
         condition: service_healthy
     ports:
       - "8000:8000"
+    secrets:
+      - casbin_login_pass
+      - db_pass
   db: # Database
     # entrypoint: ['docker-entrypoint.sh']
     image: postgres:17.5-alpine3.21  # Using alpine Postgres image
@@ -62,10 +68,11 @@ services:
     restart: unless-stopped
     volumes:
       - pgdata:/var/lib/postgresql/data
-      - db-init:/docker-entrypoint-initdb.d:ro # Init scripts for postgres
+      - ./db-init:/docker-entrypoint-initdb.d:ro
     environment:
       POSTGRES_USER:     library  
       POSTGRES_PASSWORD: ${DB_PASS}
+      CASBIN_LOGIN_PASS: ${CASBIN_LOGIN_PASS}
       POSTGRES_DB:       library
 
     healthcheck:
@@ -104,7 +111,6 @@ networks: # Frontend and DB MUST NEVER be on the same network.
 
 volumes:
   pgdata:
-  db-init:
 
 secrets:
   casbin_login_pass:

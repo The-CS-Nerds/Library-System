@@ -1,0 +1,10 @@
+#!/bin/bash
+set -e
+psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" <<-EOSQL
+    CREATE ROLE casbin NOLOGIN;
+    CREATE ROLE casbin_login LOGIN PASSWORD '${CASBIN_LOGIN_PASS}';
+    GRANT casbin TO casbin_login;
+
+    GRANT CREATE, USAGE ON SCHEMA public TO casbin_login;
+    GRANT ALL PRIVILEGES ON DATABASE ${POSTGRES_DB} TO casbin_login;
+EOSQL

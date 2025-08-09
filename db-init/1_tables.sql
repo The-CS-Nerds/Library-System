@@ -39,5 +39,9 @@ CREATE TABLE IF NOT EXISTS users (
   surname TEXT NOT NULL,
   student_id INTEGER NOT NULL
   email TEXT NOT NULL UNIQUE,
-  role TEXT NOT NULL,
 );
+
+CREATE TABLE IF NOT EXISTS casbin_users (
+  id UUID PRIMARY KEY,
+  role TEXT NOT NULL
+)

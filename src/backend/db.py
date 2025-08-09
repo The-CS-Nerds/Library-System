@@ -20,6 +20,8 @@ import uuid
 from uuid import uuid4
 from email_validator import validate_email, EmailNotValidError
 from casbin import Enforcer
+from casbin_sqlalchemy_adapter import Adapter
+from sqlalchemy import create_engine
 
 log = logging.getLogger(__name__)
 
@@ -27,10 +29,16 @@ log.info('Reading DB password...')
 
 log.info('Read DB password')
 
+MODEL_PATH = "auth/model.conf"
+DB_URL = f"postgresql+psycopg://casbin_login:{os.environ['CASBIN_LOGIN_PASS']}@db:5432/library"
+engine = create_engine(DB_URL)
+adapter = Adapter(engine)
+enforcer = Enforcer(MODEL_PATH, adapter)
+
 class APIException(Exception):
     pass
 
-def sendSQLCommand(command, userID, table, verified = True, fetch = 1): # NO USER INPUT SHOULD BE SENT DIRECTLY HERE
+def sendSQLCommand(command, UUID, table, verified = True, fetch = 1): # NO USER INPUT SHOULD BE SENT DIRECTLY HERE
     verb = command.strip().split()[0].upper()
     action_map = {
         "SELECT": "read",
@@ -39,7 +47,7 @@ def sendSQLCommand(command, userID, table, verified = True, fetch = 1): # NO USE
         "DELETE": "delete", #@HippoProgrammer Please update this as I know not much SQL
     }
     action = action_map.get(verb)
-    if Enforcer.enforce(userID, table, "*", action, verified):
+    if Enforcer.enforce(UUID, table, "*", action, verified):
         log.debug("User is authorized to perform this action")
         log.info('Connecting to postgres DB...')
         with psycopg.connect(f"postgres://library:{str(os.environ['DB_PASS'])}@db:5432/library") as conn: # create a connection to the db
@@ -100,9 +108,9 @@ class User:
     def SQLStore(self):
         try:
             sendSQLCommand(
-                command="INSERT INTO users (id, forename, surname, student_id, email, role) VALUES (%s, %s, %s, %s, %s, %s)",
-                params=(self.uuid, self.forename, self.surname, self.student_id, self.email, self.role),
-                userID='admin', # Needs to updated later on
+                command="INSERT INTO users (id, forename, surname, student_id, email) VALUES (%s, %s, %s, %s, %s)",
+                params=(self.uuid, self.forename, self.surname, self.student_id, self.email),
+                UUID=0, # Ummm, is this correct @HippoProgrammer
                 table='users',
                 verified=True,
                 fetch=0
@@ -111,9 +119,7 @@ class User:
             log.error(f"Failed to store user {self.student_id} in database: {e}")
     def addToCasbin(self):
         try:
-            enforcer = Enforcer("model.conf", "policy.csv")
-            enforcer.add_policy("user", self.uuid, "read", "book")
-            enforcer.add_grouping_policy(self.uuid, "group", self.role)
+            enforcer.add_grouping_policy(self.uuid, self.role)
             enforcer.save_policy()
         except Exception as e:
             log.error(f"Failed to add user {self.uuid} to Casbin: {e}")
