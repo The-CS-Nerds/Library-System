@@ -20,12 +20,20 @@ import uuid
 from uuid import uuid4
 from email_validator import validate_email, EmailNotValidError
 from casbin import Enforcer
+from casbin_sqlalchemy_adapter import Adapter
+from sqlalchemy import create_engine
 
 log = logging.getLogger(__name__)
 
 log.info('Reading DB password...')
 
 log.info('Read DB password')
+
+MODEL_PATH = "auth/model.conf"
+DB_URL = f"postgresql+psycopg://casbin_login:{os.environ['CASBIN_LOGIN_PASS']}@db:5432/library"
+engine = create_engine(DB_URL)
+adapter = Adapter(engine)
+enforcer = Enforcer(MODEL_PATH, adapter)
 
 class APIException(Exception):
     pass
@@ -111,9 +119,7 @@ class User:
             log.error(f"Failed to store user {self.student_id} in database: {e}")
     def addToCasbin(self):
         try:
-            enforcer = Enforcer("auth/model.conf", "auth/policy.csv")
-            enforcer.add_policy("user", self.uuid, "read", "book")
-            enforcer.add_grouping_policy(self.uuid, "group", self.role)
+            enforcer.add_grouping_policy(self.uuid, self.role)
             enforcer.save_policy()
         except Exception as e:
             log.error(f"Failed to add user {self.uuid} to Casbin: {e}")
