@@ -5,3 +5,5 @@ p,librarian,loans,loan,delete,True
 p,student,books,book,read,True
 p,*,books,book,read,False
 p,admin,*,*,*,True
+p,code,*,*,*,True
+g,0,code
