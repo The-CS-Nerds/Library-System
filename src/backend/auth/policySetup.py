@@ -18,7 +18,7 @@ from pathlib import Path
 import logging
 import sys
 import os
-from casbin import Enforcer, persist
+from casbin import Enforcer
 from casbin_sqlalchemy_adapter import Adapter
 from sqlalchemy import create_engine
 
