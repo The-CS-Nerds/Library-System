@@ -1,0 +1,5 @@
+site_name: Library System
+theme:
+  name: readthedocs
+nav:
+  - Home: index.md
