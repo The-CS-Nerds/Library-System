@@ -3,9 +3,9 @@ A Flask-based webapp for (book) library management, with reserves, loans, renewa
 
 Can run on a locally hosted server.
 
-## Wiki
-[Home](https://github.com/The-CS-Nerds/Library-System/wiki)
-[Installation](https://github.com/The-CS-Nerds/Library-System/wiki/Installation)
+## Documentation:
+
+See our [**read the docs page**](https://library-system.readthedocs.io/en/latest/)
 
 ## Versions
 Currently in development.
